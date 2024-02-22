@@ -11,14 +11,20 @@ BIN        = demo
 O=./out
 INCDIR += -I./inc 
 INCDIR += -I./inc/libtom 
+INCDIR += -I./inc/mbedtls
 
 CFLAGS += $(INCDIR)
 LDFLAGS +=
 
 LDLIBS += -L./lib/libtom/$(TOOLCHAIN_PREFIX)
+LDLIBS += -L./lib/mbedtls/$(TOOLCHAIN_PREFIX)
 
 srcs += add.c
 srcs += sha.c
+srcs += mbedtls_test.c
+
+LIBS += -ltomcrypt
+LIBS += -lmbedcrypto -lmbedtls -lmbedx509
 
 objs := $(patsubst %.c,$(O)/%.o, $(srcs))
 
@@ -26,7 +32,7 @@ all: $(BIN) $(TARGET)
 
 $(BIN): $(TARGET)
 	@echo "  Build $@ :"
-	$(CC) $(CFLAGS) -o $(O)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(O) -l$(TARGET) -I./inc -ltomcrypt
+	$(CC) $(CFLAGS) -o $(O)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(O) -l$(TARGET)  $(LIBS)
 
 $(TARGET): $(objs)
 	@echo "   object (.o) --> library(.a)"
