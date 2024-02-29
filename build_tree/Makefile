@@ -20,7 +20,7 @@ LDLIBS += -L./lib/libtom/$(TOOLCHAIN_PREFIX)
 LDLIBS += -L./lib/mbedtls/$(TOOLCHAIN_PREFIX)
 
 srcs += add.c
-srcs += sha.c
+srcs += libtom_test.c
 srcs += mbedtls_test.c
 
 LIBS += -ltomcrypt

@@ -8,8 +8,9 @@
                 printf("\n"); \
         } while (0)
 
-void sha1__test()
+void libtom_test(void)
 {
+	printf("sha256 test");
         unsigned char data[]={0x0,0x1,0x2,0x3,0x4};
         int x;
 

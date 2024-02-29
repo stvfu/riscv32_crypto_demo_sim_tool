@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include <add.h>
-#include <sha.h>
+#include <libtom_test.h>
 #include <mbedtls_test.h>
 
 int main(void) {
@@ -12,7 +12,7 @@ int main(void) {
     printf("add test: 2+3 = %d\n",add_test(2,3));
 
     printf("\n\033[33mTest2: libtom test:\033[0m\n");
-    sha1__test();
+    libtom_test();
 
     printf("\n\033[33mTest3: mbedtls test:\033[0m\n");
     mbedtls_test();
