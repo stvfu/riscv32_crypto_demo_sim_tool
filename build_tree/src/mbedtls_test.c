@@ -179,7 +179,6 @@ void test_mbedtls_rsa_pkcs1_verify(data_t *message_str,
                                    data_t *sig_str,
 				   int result)
 {
-    printf("\nmessage_str.len = %d\n", message_str->len);
     DUMP_1((int)message_str->len, (char *)message_str->x);
     printf("padding_mode = %d\n", padding_mode);
     printf("digest = %d (sha256)\n", digest);
@@ -208,14 +207,15 @@ void test_mbedtls_rsa_pkcs1_verify(data_t *message_str,
     TEST_EQUAL(mbedtls_rsa_get_bitlen(&ctx), (size_t) mod);
     TEST_ASSERT(mbedtls_rsa_check_pubkey(&ctx) == 0);
 
-    int ret = mbedtls_rsa_pkcs1_verify(&ctx, digest, message_str->len, message_str->x, sig_str->x);
-    if(ret==0)
+    TEST_ASSERT(mbedtls_rsa_pkcs1_verify(&ctx, digest, message_str->len, message_str->x,
+                                         sig_str->x) == result);
+    if(mbedtls_rsa_pkcs1_verify(&ctx, digest, message_str->len, message_str->x, sig_str->x)==0)
     {
-	printf("Verify Pass \n");
+        printf("\033[32m Verify Pass!\033[0m\n"); 
     }
     else
     {
-        printf("Verify Fail \n");
+        printf("\033[31m Verify Fail!\033[0m\n");
     }
 
 exit:
@@ -229,7 +229,7 @@ void mbedtls_test_rsa(void)
                            0x9B, 0x04, 0x4A, 0x8E, 0x98, 0xC6, 0xB0, 0x87,
                            0xF1, 0x5A, 0x0B, 0xFC };
     data_t hash;
-    hash.x = hash_data;
+    hash.x = (uint8_t *)hash_data;
     hash.len = 20;
     char sig_data[256] = { 0xaa, 0x2d, 0x9f, 0x88, 0x33, 0x4d, 0x61, 0xbe,
                            0xd7, 0x43, 0x17, 0xba, 0x54, 0x9b, 0x14, 0x63,
@@ -265,7 +265,7 @@ void mbedtls_test_rsa(void)
                            0xcf, 0xd1, 0xe5, 0x47, 0x7e, 0xce, 0x9d, 0xf8 };
 
     data_t sig;
-    sig.x = sig_data;
+    sig.x = (uint8_t *)sig_data;
     sig.len = 256;
 
     char *N = "b38ac65c8141f7f5c96e14470e851936a67bf94cc6821a39ac12c05f7c0b06d9e6ddba2224703b02e25f31452f9c4a8417b62675fdc6df46b94813bc7b9769a892c482b830bfe0ad42e46668ace68903617faf6681f4babf1cc8e4b0420d3c7f61dc45434c6b54e2c3ee0fc07908509d79c9826e673bf8363255adb0add2401039a7bcd1b4ecf0fbe6ec8369d2da486eec59559dd1d54c9b24190965eafbdab203b35255765261cd0909acf93c3b8b8428cbb448de4715d1b813d0c94829c229543d391ce0adab5351f97a3810c1f73d7b1458b97daed4209c50e16d064d2d5bfda8c23893d755222793146d0a78c3d64f35549141486c3b0961a7b4c1a2034f";
