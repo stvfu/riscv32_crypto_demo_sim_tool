@@ -9,6 +9,7 @@ PK_SOURCE_PATH=$CURRENT_PATH/riscv-pk
 SPIKE_COMMIT_ID="v1.1.0"
 PK_COMMIT_ID="v1.0.0"
 
+ENABLE_TOOLCHAIN_DOWNLOAD=enable
 ENABLE_GEN_SPIKE=enable
 ENABLE_GEN_PK=enable
 
@@ -18,6 +19,49 @@ function fPreparetoolchain()
     echo -e "\033[33m# Start Download Toolchain                    #\033[0m"
     echo -e "\033[33m###############################################\033[0m"
 
+    if [ "$ENABLE_TOOLCHAIN_DOWNLOAD" = "enable" ]; then
+        #check ubuntu version
+        ubuntu_version=$(lsb_release -sr)
+        echo "ubuntu version = $ubuntu_version"
+
+        rm -rf $CURRENT_PATH/toolchain
+        mkdir -p $CURRENT_PATH/toolchain
+        mkdir -p $CURRENT_PATH/toolchain/riscv32-corev-elf/$ubuntu_version/
+        mkdir -p $CURRENT_PATH/toolchain/riscv32-unknown-elf/$ubuntu_version/
+
+        case $ubuntu_version in
+        18.04)
+            RISCV32_COREV_TOOLCHAIN_URL="https://buildbot.embecosm.com/job/corev-gcc-ubuntu1804/32/artifact/corev-openhw-gcc-ubuntu1804-20240114.tar.gz"
+            RISCV32_UNKNOWN_TOOLCHAIN_URL="https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2022.11.12/riscv32-elf-ubuntu-18.04-nightly-2022.11.12-nightly.tar.gz"
+            ;;
+        20.04)
+            RISCV32_COREV_TOOLCHAIN_URL="https://buildbot.embecosm.com/job/corev-gcc-ubuntu2004/31/artifact/corev-openhw-gcc-ubuntu2004-20240114.tar.gz"
+            RISCV32_UNKNOWN_TOOLCHAIN_URL="https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2024.02.02/riscv32-elf-ubuntu-20.04-gcc-nightly-2024.02.02-nightly.tar.gz"
+            ;;
+        *)
+            TOOLCHAIN_URL="NA"
+            exit;
+            ;;
+        esac
+
+        echo "Start download riscv32-corev-elf toolchain..."
+        echo "url: $RISCV32_COREV_TOOLCHAIN_URL"
+        cd $CURRENT_PATH/toolchain/riscv32-corev-elf/$ubuntu_version
+        wget $RISCV32_COREV_TOOLCHAIN_URL
+        tar zxvf *.tar.gz
+        export PATH=$PATH:$CURRENT_PATH/toolchain/riscv32-corev-elf/$ubuntu_version/corev-openhw-gcc-ubuntu2004-20240114/bin
+
+        echo "Start download riscv32-unknow-elf toolchain..."
+        echo "url: $RISCV32_UNKNOWN_TOOLCHAIN_URL"
+        cd $CURRENT_PATH/toolchain/riscv32-unknown-elf/$ubuntu_version
+        wget $RISCV32_UNKNOWN_TOOLCHAIN_URL
+        tar zxvf *.tar.gz
+        export PATH=$PATH:$CURRENT_PATH/toolchain/riscv32-unknown-elf/$ubuntu_version/riscv/bin
+
+    fi
+    echo -e "\033[33m###############################################\033[0m"
+    echo -e "\033[33m# End Download Toolchain                      #\033[0m"
+    echo -e "\033[33m###############################################\033[0m"
 }
 
 function fDownloadRiscvTool()
