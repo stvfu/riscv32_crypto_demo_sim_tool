@@ -93,7 +93,7 @@ static void mbedtls_test_aes_cbc(void)
     // reset buffer
     memset(buf,0,sizeof(buf));
     memset(iv,0,16);
-    strcpy((char *)iv, (const char *)IV_DATA);
+    strncpy((char *)iv, (const char *)IV_DATA, 16);
 
     // do decrypt
     mbedtls_aes_setkey_dec(&ctx, (const unsigned char *)secretKey, 128);

@@ -13,6 +13,9 @@ INCDIR += -I./inc
 INCDIR += -I./inc/libtom 
 INCDIR += -I./inc/mbedtls
 
+# mbedtsl macro
+CFLAGS+= -DMBEDTLS_ALLOW_PRIVATE_ACCESS
+
 CFLAGS += $(INCDIR)
 LDFLAGS +=
 
