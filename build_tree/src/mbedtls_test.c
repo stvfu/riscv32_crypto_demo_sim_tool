@@ -17,7 +17,7 @@
 #include "mbedtls/rsa.h"
 #include "mbedtls/platform.h"
 
-void DUMP_1(int length, char *Adr)
+static void _DUMP_(int length, char *Adr)
 {
     int i;
     for(i=0;i<length;i++)
@@ -43,19 +43,19 @@ static void mbedtls_test_sha(void)
 
     printf("\n  mbedtls test : MD5\n");
     mbedtls_md5((unsigned char *)str, 13, digest);
-    DUMP_1(16, (char *)digest);
+    _DUMP_(16, (char *)digest);
 
     printf("\n  mbedtls test : SHA1\n");
     mbedtls_sha1((unsigned char *)str, 13, digest);
-    DUMP_1(20, (char *)digest);
+    _DUMP_(20, (char *)digest);
 
     printf("\n  mbedtls test : SHA256\n");
     mbedtls_sha256((unsigned char *)str, 13, digest, 0);
-    DUMP_1(32, (char *)digest);
+    _DUMP_(32, (char *)digest);
 
     printf("\n  mbedtls test : SHA512\n");
     mbedtls_sha512((unsigned char *)str, 13, digest, 0);
-    DUMP_1(64, (char *)digest);
+    _DUMP_(64, (char *)digest);
     return;
 }
 
@@ -79,16 +79,16 @@ static void mbedtls_test_aes_cbc(void)
     mbedtls_aes_setkey_enc(&ctx, (const unsigned char *)secretKey, 128);
 
     printf("\n test buf:");
-    DUMP_1(TEST_BUFFER_SIZE, (char *)buf);
+    _DUMP_(TEST_BUFFER_SIZE, (char *)buf);
     printf("\n key buf:");
-    DUMP_1(16, (char *)secretKey);
+    _DUMP_(16, (char *)secretKey);
     printf("\n iv buf:");
-    DUMP_1(16, (char *)iv);
+    _DUMP_(16, (char *)iv);
 
     // do encrypt
     mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_ENCRYPT, (size_t)len, iv, (const unsigned char *)buf, encrypt_buf);
     printf("\n enceypted buf:");
-    DUMP_1(TEST_BUFFER_SIZE, (char *)encrypt_buf);
+    _DUMP_(TEST_BUFFER_SIZE, (char *)encrypt_buf);
 
     // reset buffer
     memset(buf,0,sizeof(buf));
@@ -100,7 +100,7 @@ static void mbedtls_test_aes_cbc(void)
     mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_DECRYPT, (size_t)len, iv, (const unsigned char *)encrypt_buf, buf);
 
     printf("\ndecrypted to orig buf:");
-    DUMP_1(TEST_BUFFER_SIZE, (char *)buf);
+    _DUMP_(TEST_BUFFER_SIZE, (char *)buf);
 
 
     printf("online tool verify: https://www.lddgo.net/en/encrypt/aes\n");
@@ -179,13 +179,13 @@ void test_mbedtls_rsa_pkcs1_verify(data_t *message_str,
                                    data_t *sig_str,
 				   int result)
 {
-    DUMP_1((int)message_str->len, (char *)message_str->x);
+    _DUMP_((int)message_str->len, (char *)message_str->x);
     printf("padding_mode = %d\n", padding_mode);
     printf("digest = %d (sha256)\n", digest);
     printf("mod = %d\n", mod);
-    DUMP_1((int)256, (char *)input_N);
-    DUMP_1((int)16, (char *)input_E);
-    DUMP_1((int)256, (char *)sig_str->x);
+    _DUMP_((int)256, (char *)input_N);
+    _DUMP_((int)16, (char *)input_E);
+    _DUMP_((int)256, (char *)sig_str->x);
     //printf("result = %d\n", result);
 
     mbedtls_rsa_context ctx;
@@ -211,11 +211,11 @@ void test_mbedtls_rsa_pkcs1_verify(data_t *message_str,
                                          sig_str->x) == result);
     if(mbedtls_rsa_pkcs1_verify(&ctx, digest, message_str->len, message_str->x, sig_str->x)==0)
     {
-        printf("\033[32m Verify Pass!\033[0m\n"); 
+        printf("\033[32m Sig Verify Pass!\033[0m\n");
     }
     else
     {
-        printf("\033[31m Verify Fail!\033[0m\n");
+        printf("\033[31m Sig Verify Fail!\033[0m\n");
     }
 
 exit:
