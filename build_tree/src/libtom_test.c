@@ -9,7 +9,6 @@ static void _DUMP_(int length, char *Adr)
         if(i % 16 == 0)
         {
                 printf("\n0x%.4X: ",i + (int)Adr);
-
         }
 
         if(i % 8 == 0)
@@ -17,13 +16,93 @@ static void _DUMP_(int length, char *Adr)
 
         printf("%.2X ",(int)Adr[i]);
     }
-    printf("\n");
-	//DUMP_1((int)length, (char *)Adr);
+    printf("\n\n");
 }
 
+#define AES_SETUP aes_setup
+#define AES_ENC   aes_ecb_encrypt
+#define AES_DEC   aes_ecb_decrypt
+#define AES_DONE  aes_done
+#define AES_TEST  aes_test
+#define AES_KS    aes_keysize
+
+const struct ltc_cipher_descriptor aes_desc1 =
+{
+    "aes1",
+    6,
+    16, 32, 16, 10,
+    AES_SETUP, AES_ENC, AES_DEC, AES_TEST, AES_DONE, AES_KS,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+};
+
+void libtom_aes_cbc_test(void)
+{
+    #define TEST_BUFFER_SIZE 64
+    #define IV_DATA "1234567812345678"
+
+    unsigned char pt[TEST_BUFFER_SIZE] = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+    unsigned char encrypt_buf[TEST_BUFFER_SIZE] = { 0 };
+
+    char key[16] = "1234567812345678";
+    unsigned char iv[16] = IV_DATA;
+
+    unsigned char ct[64], tmp[64], iv2[16];
+    int cipher_idx;
+
+    symmetric_CBC cbc;
+    unsigned long l;
+   
+    register_cipher(&aes_desc1);
+
+    printf("  test buf:");
+    _DUMP_(64, pt);
+
+    printf("  key buf:");
+    _DUMP_(16, key);
+
+    printf("  iv buf:");
+    _DUMP_(16, iv);
+
+    /* get idx of AES handy */
+    cipher_idx = find_cipher("aes1");
+    if (cipher_idx == -1) {
+       printf("test requires AES\n");
+       return;
+    }
+   
+    /* test CBC mode */
+    /* encode the block */
+    cbc_start(cipher_idx, iv, key, 16, 0, &cbc);
+    l = sizeof(iv2);
+    cbc_getiv(iv2, &l, &cbc);
+    if (l != 16 || memcmp(iv2, iv, 16)) {
+       printf("cbc_getiv failed\n");
+       return;
+    }
+    cbc_encrypt(pt, ct, 64, &cbc);
+    printf("  encrypted to orig buf:");
+    _DUMP_(64, ct);
+
+    /* decode the block */
+    cbc_setiv(iv2, l, &cbc);
+    zeromem(tmp, sizeof(tmp));
+    cbc_decrypt(ct, tmp, 64, &cbc);
+    if (memcmp(tmp, pt, 64) != 0) {
+       printf("CBC failed\n");
+       return;
+    }
+    printf("  decrypted to orig buf:");
+    _DUMP_(64, tmp);
+    
+    printf("online tool verify: https://www.lddgo.net/en/encrypt/aes\n");
+    return;
+}
 
 void libtom_test(void)
 {
+    printf("\n\033[33m  libtom aes cbc test\033[0m\n");
+    libtom_aes_cbc_test();
+
     //unsigned char data[]={0x0,0x1,0x2,0x3,0x4};
     char string[] = "Hello, world!";
     int x;
