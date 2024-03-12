@@ -1,3 +1,5 @@
+Q=@
+
 # toolchain setting]
 TOOLCHAIN_PREFIX=riscv32-corev-elf
 CC=$(TOOLCHAIN_PREFIX)-gcc
@@ -8,7 +10,7 @@ TARGET     = MyLib
 TARGET_LIB = lib$(TARGET).a
 BIN        = demo
 
-O=./out
+OUTPUT_PATH=./out
 INCDIR += -I./inc 
 INCDIR += -I./inc/libtom 
 INCDIR += -I./inc/mbedtls
@@ -22,32 +24,34 @@ LDFLAGS +=
 LDLIBS += -L./lib/libtom/$(TOOLCHAIN_PREFIX)
 LDLIBS += -L./lib/mbedtls/$(TOOLCHAIN_PREFIX)
 
-srcs += add.c
-srcs += libtom_test.c
-srcs += mbedtls_test.c
+#source
+SRCS += $(wildcard src/*.c)
 
 LIBS += -ltomcrypt
 LIBS += -lmbedcrypto -lmbedtls -lmbedx509
 
-objs := $(patsubst %.c,$(O)/%.o, $(srcs))
+# object
+OBJS := $(SRCS:.c=.o)
 
 all: $(BIN) $(TARGET)
 
 $(BIN): $(TARGET)
-	@echo "  Build $@ :"
-	$(CC) $(CFLAGS) -o $(O)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(O) -l$(TARGET)  $(LIBS)
-	$(CC) $(CFLAGS) -o $(O)/$@_suite test/test_app.c $(LDFLAGS) $(LDLIBS) -L$(O) -l$(TARGET)  $(LIBS)
+	@echo "  Build $(BIN) :"
+	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET)  $(LIBS)
+	@echo "  Build $(BIN)_suite :"
+	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@_suite test/test_app.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET)  $(LIBS)
 
-$(TARGET): $(objs)
+$(TARGET): $(OBJS)
 	@echo "   object (.o) --> library(.a)"
-	$(AR) -rsc $(O)/$(TARGET_LIB) $(O)/*.o
+	$(Q)mkdir $(OUTPUT_PATH)
+	$(Q)$(AR) -rcs $(OUTPUT_PATH)/$(TARGET_LIB) $(OBJS)
 
-$(O)/%.o: src/%.c
-	@mkdir -p $(O)
+%.o: %.c
 	@echo "   CC   $<"
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(Q)$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	@echo 'CLEAN $(O)'
-	$(Q)rm -rf $(O)
+	@echo '  CLEAN $(OUTPUT_PATH)'
+	$(Q)rm -rf $(OBJS)
+	$(Q)rm -rf $(OUTPUT_PATH)
 
