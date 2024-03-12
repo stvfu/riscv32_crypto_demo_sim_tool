@@ -36,6 +36,7 @@ all: $(BIN) $(TARGET)
 $(BIN): $(TARGET)
 	@echo "  Build $@ :"
 	$(CC) $(CFLAGS) -o $(O)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(O) -l$(TARGET)  $(LIBS)
+	$(CC) $(CFLAGS) -o $(O)/$@_suite test/test_app.c $(LDFLAGS) $(LDLIBS) -L$(O) -l$(TARGET)  $(LIBS)
 
 $(TARGET): $(objs)
 	@echo "   object (.o) --> library(.a)"

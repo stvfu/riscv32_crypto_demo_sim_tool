@@ -18,6 +18,7 @@ echo -e "\033[33m###############################################\033[0m"
 if [[ -x "$SPIKE_PATH/spike" ]] && [[ -x "$PK_PATH/pk" ]]; then
     echo "start test"
     $SPIKE_PATH/spike $ISA_OPTION $PK_PATH/pk ./out/demo
+    $SPIKE_PATH/spike $ISA_OPTION $PK_PATH/pk ./out/demo_suite
 else
     echo "Either spike or pk does not exist or is not executable."
     echo "Please go to open_source/riscv_tool and run script ./gen_riscv_tool_script.sh"
