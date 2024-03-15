@@ -3,6 +3,7 @@
 #include <add.h>
 #include <libtom_test.h>
 #include <mbedtls_test.h>
+#include <sec_api.h>
 
 typedef struct MENU{
     char *NAME;
@@ -14,15 +15,19 @@ static void test_printf(void);
 static void test_lib(void);
 static void test_libtom(void);
 static void test_mebtls(void);
+static void test_random(void);
+static void test_random_libtom(void);
+static void test_random_mbedtls(void);
 
 static MENU MENU_TABLE[] = {
-    { "printf test",               &test_printf},
-    { "test lib(add api)",         &test_lib},
-    { "test libtom (all)",         &test_libtom},
-    { "test libmbedtls (all)",     &test_mebtls},
-    { "(todo)test case template",  &test},
-    { "(todo)test case template",  &test},
-    { "(todo)test case template",  &test},
+    { "spike printf test",                   &test_printf},
+    { "static lib link test(add api)",       &test_lib},
+    { "test libtom (all)",                   &test_libtom},
+    { "test libmbedtls (all)",               &test_mebtls},
+    { "test random",                         &test_random},
+    { "  test random(mbedtls)(not support)", &test_random_libtom},
+    { "  test random(libtom)",               &test_random_mbedtls},
+    { "(todo)test case template",            &test},
 };
 
 static void test(void)
@@ -51,6 +56,25 @@ static void test_mebtls(void)
     mbedtls_test();
 }
 
+static void test_random(void)
+{
+    char random_buffer[32] = {0};
+    sec_GenRandomBuffer(random_buffer, 32, ENUM_MBEDTLS);
+    sec_GenRandomBuffer(random_buffer, 32, ENUM_LIBTOM);
+}
+
+static void test_random_libtom(void)
+{
+    char random_buffer[32] = {0};
+    sec_GenRandomBuffer(random_buffer, 32, ENUM_MBEDTLS);
+}
+
+static void test_random_mbedtls(void)
+{
+    char random_buffer[32] = {0};
+    sec_GenRandomBuffer(random_buffer, 32, ENUM_LIBTOM);
+}
+
 void __test_suite_message__(void)
 {
     printf("\n\n");
@@ -69,7 +93,6 @@ void __test_suite_message__(void)
 
 }
 
-
 void __test_suite__(void)
 {
     printf("\n\nEnter RISC-V Crypto Test Sueite\n");
@@ -86,7 +109,7 @@ void __test_suite__(void)
         s32CharNumber = 0;
         __test_suite_message__();
 
-    // char input
+        // char input
         while(1)
         {
             u8CharInput = getchar();

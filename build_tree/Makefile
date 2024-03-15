@@ -26,6 +26,7 @@ LDLIBS += -L./lib/mbedtls/$(TOOLCHAIN_PREFIX)
 
 #source
 SRCS += $(wildcard src/*.c)
+SRCS += $(wildcard src/sec_api/*.c)
 
 LIBS += -ltomcrypt
 LIBS += -lmbedcrypto -lmbedtls -lmbedx509

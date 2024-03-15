@@ -98,6 +98,18 @@ void libtom_aes_cbc_test(void)
     return;
 }
 
+void libtom_gen_random_buffer(char* out_buf, int size)
+{
+    unsigned long res = 0;
+    unsigned char *random_buffer = malloc(size);
+
+    res = rng_get_bytes(random_buffer, size, NULL);
+
+    memcpy(out_buf, random_buffer, size);
+    _DUMP_(size, random_buffer);
+    free(random_buffer);
+}
+
 void libtom_test(void)
 {
     printf("\n\033[33m  libtom aes cbc test\033[0m\n");
