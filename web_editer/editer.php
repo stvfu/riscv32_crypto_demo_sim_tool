@@ -49,7 +49,9 @@
         <div id="control-panel">
             <input type="text" id="textbox_file" placeholder="Enter file name...">
             <button onclick="loadFile()">Load</button>
-            <button onclick="saveFile()">Save</button>
+	    <button onclick="saveFile()">Save</button>
+            <button onclick="convertTabsToSpaces()">Tab to Space</button>
+            <button onclick="removeTrailingSpaces()">No tail Space</button>
         </div>
         <div id="main-container">
             <div id="editor-container">
@@ -88,10 +90,15 @@
             }
 
             function saveFile() {
+                var confirmSave = confirm("Are you sure you want to save the file?");
+                if (!confirmSave) {
+                    return; // cancel
+                }
+
                 var fileName = document.getElementById('textbox_file').value;
                 if (fileName.indexOf('..') !== -1) {
-                   alert('Invalid file name.');
-                   return;
+                    alert('Invalid file name.');
+                    return;
                 }
                 var fileContent = editor.getValue();
                 fetch('save_file.php', {
@@ -103,7 +110,7 @@
                 })
                 .then(response => response.text())
                 .then(data => {
-                    alert(data);
+                    alert(data); // save res
                 })
                 .catch(error => console.error('Error:', error));
             }
@@ -121,6 +128,19 @@
                     });
                 })
                 .catch(error => console.error('Error:', error));
+            }
+
+	    function convertTabsToSpaces() {
+                var code = editor.getValue();
+                var spaces = "    "; // Define the number of spaces for each tab
+                var newCode = code.replace(/\t/g, spaces);
+                editor.setValue(newCode);
+            }
+
+            function removeTrailingSpaces() {
+                var code = editor.getValue();
+                var newCode = code.replace(/[ \t]+$/gm, '');
+                editor.setValue(newCode);
             }
 
             // Call listFiles on page load
