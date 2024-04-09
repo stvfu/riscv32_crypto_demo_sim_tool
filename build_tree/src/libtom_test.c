@@ -1,6 +1,43 @@
 #include <stdio.h>
 #include <tomcrypt.h>
 
+#define AES_SETUP aes_setup
+#define AES_ENC   aes_ecb_encrypt
+#define AES_DEC   aes_ecb_decrypt
+#define AES_DONE  aes_done
+#define AES_TEST  aes_test
+#define AES_KS    aes_keysize
+
+#define REGISTER_PRNG(h) do {\
+   LTC_ARGCHK(register_prng(h) != -1); \
+} while(0)
+
+#define DO(x) do { x; } while (0);
+
+const struct ltc_prng_descriptor yarrow_desc1 =
+{
+    "yarrow1", 64,
+    &yarrow_start,
+    &yarrow_add_entropy,
+    &yarrow_ready,
+    &yarrow_read,
+    &yarrow_done,
+    &yarrow_export,
+    &yarrow_import,
+    &yarrow_test
+};
+
+const struct ltc_cipher_descriptor aes_desc1 =
+{
+    "aes1",
+    6,
+    16, 32, 16, 10,
+    AES_SETUP, AES_ENC, AES_DEC, AES_TEST, AES_DONE, AES_KS,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+};
+
+prng_state yarrow_prng;
+
 static void _DUMP_(int length, char *Adr)
 {
     int i;
@@ -19,21 +56,45 @@ static void _DUMP_(int length, char *Adr)
     printf("\n\n");
 }
 
-#define AES_SETUP aes_setup
-#define AES_ENC   aes_ecb_encrypt
-#define AES_DEC   aes_ecb_decrypt
-#define AES_DONE  aes_done
-#define AES_TEST  aes_test
-#define AES_KS    aes_keysize
-
-const struct ltc_cipher_descriptor aes_desc1 =
+void libtom_rsa_genkey(void)
 {
-    "aes1",
-    6,
-    16, 32, 16, 10,
-    AES_SETUP, AES_ENC, AES_DEC, AES_TEST, AES_DONE, AES_KS,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
+   char e[2048]={0};
+   char d[2048]={0};
+   char N[2048]={0};
+   char p[2048]={0};
+   char q[2048]={0};
+   char qP[2048]={0};
+   char dP[2048]={0};
+   char dQ[2048]={0};
+
+   rsa_key key;
+   key.type=0;
+   key.e=e;
+   key.d=d;
+   key.N=N;
+   key.p=p;
+   key.q=q;
+   key.qP=qP;
+   key.dP=dP;
+   key.dQ=dQ;
+
+   int prng_idx = 0;
+
+   printf("res_genkey start\n");
+   REGISTER_PRNG(&yarrow_desc);
+
+   prng_idx = find_prng("yarrow");
+
+   if (prng_idx == -1) {
+      fprintf(stderr, "rsa_test requires SHA1 and yarrow");
+      return;
+   }
+
+   rsa_make_key(&yarrow_prng, prng_idx, 1024/8, 3, &key);
+
+   printf("res_genkey end\n");
+   return;
+}
 
 void libtom_aes_cbc_test(void)
 {
@@ -51,7 +112,7 @@ void libtom_aes_cbc_test(void)
 
     symmetric_CBC cbc;
     unsigned long l;
-   
+
     register_cipher(&aes_desc1);
 
     printf("  test buf:");
@@ -69,7 +130,7 @@ void libtom_aes_cbc_test(void)
        printf("test requires AES\n");
        return;
     }
-   
+
     /* test CBC mode */
     /* encode the block */
     cbc_start(cipher_idx, iv, key, 16, 0, &cbc);
@@ -93,7 +154,7 @@ void libtom_aes_cbc_test(void)
     }
     printf("  decrypted to orig buf:");
     _DUMP_(64, tmp);
-    
+
     printf("online tool verify: https://www.lddgo.net/en/encrypt/aes\n");
     return;
 }
@@ -164,3 +225,4 @@ void libtom_test(void)
     _DUMP_(32, random_buffer);
     return;
 }
+

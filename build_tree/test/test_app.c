@@ -18,6 +18,8 @@ static void test_mebtls(void);
 static void test_random(void);
 static void test_random_libtom(void);
 static void test_random_mbedtls(void);
+static void test_rsa_genkey(void);
+static void test_rsa_genkey_libtom(void);
 
 static MENU MENU_TABLE[] = {
     { "spike printf test",                   &test_printf},
@@ -27,6 +29,8 @@ static MENU MENU_TABLE[] = {
     { "test random",                         &test_random},
     { "  test random(mbedtls)(not support)", &test_random_libtom},
     { "  test random(libtom)",               &test_random_mbedtls},
+    { "test rsa gen key",                    &test_rsa_genkey},
+    { "  test rsa gen key(libtom)(fail)",    &test_rsa_genkey_libtom},
     { "(todo)test case template",            &test},
 };
 
@@ -44,6 +48,16 @@ static void test_lib(void)
 {
     printf("static lib test\n");
     printf("  add test: 2+3 = %d\n",add_test(2,3));
+}
+
+static void test_rsa_genkey(void)
+{
+    libtom_rsa_genkey();
+}
+
+static void test_rsa_genkey_libtom(void)
+{
+    libtom_rsa_genkey();
 }
 
 static void test_libtom(void)
