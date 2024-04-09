@@ -52,7 +52,7 @@ static void test_lib(void)
 
 static void test_rsa_genkey(void)
 {
-    libtom_rsa_genkey();
+    sec_GenRsaKey();
 }
 
 static void test_rsa_genkey_libtom(void)
