@@ -27,15 +27,6 @@ const struct ltc_prng_descriptor yarrow_desc1 =
     &yarrow_test
 };
 
-const struct ltc_cipher_descriptor aes_desc1 =
-{
-    "aes1",
-    6,
-    16, 32, 16, 10,
-    AES_SETUP, AES_ENC, AES_DEC, AES_TEST, AES_DONE, AES_KS,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
-
 prng_state yarrow_prng;
 
 static void _DUMP_(int length, char *Adr)
@@ -113,7 +104,7 @@ void libtom_aes_cbc_test(void)
     symmetric_CBC cbc;
     unsigned long l;
 
-    register_cipher(&aes_desc1);
+    register_cipher(&aes_desc);
 
     printf("  test buf:");
     _DUMP_(64, pt);
@@ -125,7 +116,7 @@ void libtom_aes_cbc_test(void)
     _DUMP_(16, iv);
 
     /* get idx of AES handy */
-    cipher_idx = find_cipher("aes1");
+    cipher_idx = find_cipher("aes");
     if (cipher_idx == -1) {
        printf("test requires AES\n");
        return;

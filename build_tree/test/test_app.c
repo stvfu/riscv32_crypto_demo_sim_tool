@@ -18,22 +18,69 @@ static void test_mebtls(void);
 static void test_random(void);
 static void test_random_libtom(void);
 static void test_random_mbedtls(void);
+
+static void test_sha1(void);
+static void test_sha256(void);
+static void test_sha384(void);
+static void test_sha512(void);
+static void test_aes_ecb_encrypt(void);
+static void test_aes_ecb_decrypt(void);
+static void test_aes_cbc_encrypt(void);
+static void test_aes_cbc_decrypt(void);
+static void test_aes_ctr_encrypt(void);
+static void test_aes_ctr_decrypt(void);
+static void test_aes_cmac(void);
 static void test_rsa_genkey(void);
-static void test_rsa_genkey_libtom(void);
+static void test_rsa_sign(void);
+static void test_rsa_verify(void);
+static void test_ecc_genkey(void);
+static void test_ecdsa_sign(void);
+static void test_ecdsa_verify(void);
 
 static MENU MENU_TABLE[] = {
+    // common
     { "spike printf test",                   &test_printf},
     { "static lib link test(add api)",       &test_lib},
-    { "test libtom (all)",                   &test_libtom},
-    { "test libmbedtls (all)",               &test_mebtls},
+    //{ "test libtom (all)",                   &test_libtom},
+    //{ "test libmbedtls (all)",               &test_mebtls},
+
+    // random
     { "test random",                         &test_random},
-    { "  test random(mbedtls)(not support)", &test_random_libtom},
-    { "  test random(libtom)",               &test_random_mbedtls},
+    //{ "  test random(mbedtls)(not support)", &test_random_libtom},
+    //{ "  test random(libtom)",               &test_random_mbedtls},
+
+    // sha
+    { "test sha1",                           &test_sha1},
+    { "test sha256",                         &test_sha256},
+    { "test sha384",                         &test_sha384},
+    { "test sha512",                         &test_sha512},
+
+    // aes
+    { "test aes ecb encrypt",                &test_aes_ecb_encrypt},
+    { "test aes ecb encrypt",                &test_aes_ecb_encrypt},
+    { "test aes ecb decrypt",                &test_aes_ecb_decrypt},
+    { "test aes cbc decrypt",                &test_aes_cbc_encrypt},
+    { "test aes cbc decrypt",                &test_aes_cbc_decrypt},
+    { "test aes ctr decrypt",                &test_aes_ctr_encrypt},
+    { "test aes ctr decrypt",                &test_aes_ctr_decrypt},
+    { "test aes cmac",                       &test_aes_cmac},
+
+    // rsa
     { "test rsa gen key",                    &test_rsa_genkey},
-    { "  test rsa gen key(libtom)(fail)",    &test_rsa_genkey_libtom},
+    { "test rsa verify",                     &test_rsa_verify},
+    { "test rsa sign",                       &test_rsa_sign},
+
+    // ecc
+    { "test ecc gen key",                    &test_ecc_genkey},
+    { "test ecdsa verify",                   &test_ecdsa_verify},
+    { "test ecdsa sign",                     &test_ecdsa_sign},
+    // other
     { "(todo)test case template",            &test},
 };
 
+////////////////////////////////////////////////////////////////////////
+// common api
+////////////////////////////////////////////////////////////////////////
 static void test(void)
 {
     printf("Test case template\n");
@@ -50,16 +97,6 @@ static void test_lib(void)
     printf("  add test: 2+3 = %d\n",add_test(2,3));
 }
 
-static void test_rsa_genkey(void)
-{
-    sec_GenRsaKey();
-}
-
-static void test_rsa_genkey_libtom(void)
-{
-    libtom_rsa_genkey();
-}
-
 static void test_libtom(void)
 {
     libtom_test();
@@ -70,10 +107,13 @@ static void test_mebtls(void)
     mbedtls_test();
 }
 
+////////////////////////////////////////////////////////////////////////
+// random related api
+////////////////////////////////////////////////////////////////////////
 static void test_random(void)
 {
     char random_buffer[32] = {0};
-    sec_GenRandomBuffer(random_buffer, 32, ENUM_MBEDTLS);
+    //sec_GenRandomBuffer(random_buffer, 32, ENUM_MBEDTLS);
     sec_GenRandomBuffer(random_buffer, 32, ENUM_LIBTOM);
 }
 
@@ -89,6 +129,121 @@ static void test_random_mbedtls(void)
     sec_GenRandomBuffer(random_buffer, 32, ENUM_LIBTOM);
 }
 
+////////////////////////////////////////////////////////////////////////
+// SHA related api
+////////////////////////////////////////////////////////////////////////
+static void test_sha1(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_sha256(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_sha384(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_sha512(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+////////////////////////////////////////////////////////////////////////
+// AES related API
+////////////////////////////////////////////////////////////////////////
+static void test_aes_ecb_encrypt(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_aes_ecb_decrypt(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_aes_cbc_encrypt(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_aes_ctr_decrypt(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_aes_ctr_encrypt(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_aes_cbc_decrypt(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_aes_cmac(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+////////////////////////////////////////////////////////////////////////
+// RSA related API
+////////////////////////////////////////////////////////////////////////
+static void test_rsa_genkey(void)
+{
+    sec_GenRsaKey();
+}
+
+static void test_rsa_sign(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_rsa_verify(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+////////////////////////////////////////////////////////////////////////
+// ECC related API
+////////////////////////////////////////////////////////////////////////
+static void test_ecc_genkey(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_ecdsa_sign(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+static void test_ecdsa_verify(void)
+{
+   //[TODO]
+   printf("[TODO]\n");
+}
+
+////////////////////////////////////////////////////////////////////////
+// Test case Menu related API
+////////////////////////////////////////////////////////////////////////
 void __test_suite_message__(void)
 {
     printf("\n\n");
