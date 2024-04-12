@@ -84,7 +84,10 @@ int sec_hash_sha1(char * msg, char* sha_out, int msg_len)
 int sec_hash_sha224(char * msg, char* sha_out, int msg_len)
 {
     _SEC_TRACE_IN
-    printf("[TODO]\n");
+    hash_state md_sha224;
+    sha224_init(&md_sha224);
+    sha224_process(&md_sha224, msg, msg_len); // size_of data
+    sha224_done(&md_sha224,sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -92,7 +95,10 @@ int sec_hash_sha224(char * msg, char* sha_out, int msg_len)
 int sec_hash_sha256(char * msg, char* sha_out, int msg_len)
 {
     _SEC_TRACE_IN
-    printf("[TODO]\n");
+    hash_state md_sha256;
+    sha256_init(&md_sha256);
+    sha256_process(&md_sha256, msg, msg_len); // size_of data
+    sha256_done(&md_sha256,sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -100,7 +106,10 @@ int sec_hash_sha256(char * msg, char* sha_out, int msg_len)
 int sec_hash_sha384(char * msg, char* sha_out, int msg_len)
 {
     _SEC_TRACE_IN
-    printf("[TODO]\n");
+    hash_state md_sha384;
+    sha384_init(&md_sha384);
+    sha384_process(&md_sha384, msg, msg_len); // size_of data
+    sha384_done(&md_sha384,sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -108,7 +117,10 @@ int sec_hash_sha384(char * msg, char* sha_out, int msg_len)
 int sec_hash_sha512(char * msg, char* sha_out, int msg_len)
 {
     _SEC_TRACE_IN
-    printf("[TODO]\n");
+    hash_state md_sha512;
+    sha512_init(&md_sha512);
+    sha512_process(&md_sha512, msg, msg_len); // size_of data
+    sha512_done(&md_sha512,sha_out);
     _SEC_TRACE_OUT
     return 0;
 }

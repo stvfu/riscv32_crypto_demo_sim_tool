@@ -22,7 +22,7 @@ rot_error_t rot_trng_generate_random_buffer(uint32_t * datas, uint32_t unmber_of
 rot_error_t rot_hash_sha1(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_hash_sha1((char *)msg, (char*)sha_out, (int)msg_len);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -30,7 +30,7 @@ rot_error_t rot_hash_sha1(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 rot_error_t rot_hash_sha224(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_hash_sha224((char *)msg, (char*)sha_out, (int)msg_len);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -38,7 +38,7 @@ rot_error_t rot_hash_sha224(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 rot_error_t rot_hash_sha256(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_hash_sha256((char *)msg, (char*)sha_out, (int)msg_len);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -46,7 +46,7 @@ rot_error_t rot_hash_sha256(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 rot_error_t rot_hash_sha384(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_hash_sha384((char *)msg, (char*)sha_out, (int)msg_len);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -54,7 +54,7 @@ rot_error_t rot_hash_sha384(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 rot_error_t rot_hash_sha512(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_hash_sha512((char *)msg, (char*)sha_out, (int)msg_len);
     _ROT_TRACE_OUT
     return 0;
 }
