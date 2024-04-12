@@ -62,9 +62,8 @@ static MENU MENU_TABLE[] = {
 
     // aes
     { "test aes ecb encrypt",                &test_aes_ecb_encrypt},
-    { "test aes ecb encrypt",                &test_aes_ecb_encrypt},
-    { "test aes ecb decrypt",                &test_aes_ecb_decrypt},
-    { "test aes cbc decrypt",                &test_aes_cbc_encrypt},
+    { "test aes ecb encrypt",                &test_aes_ecb_decrypt},
+    { "test aes cbc encrypt",                &test_aes_cbc_encrypt},
     { "test aes cbc decrypt",                &test_aes_cbc_decrypt},
     { "test aes ctr decrypt",                &test_aes_ctr_encrypt},
     { "test aes ctr decrypt",                &test_aes_ctr_decrypt},
@@ -248,44 +247,228 @@ static void test_sha512(void)
 ////////////////////////////////////////////////////////////////////////
 static void test_aes_ecb_encrypt(void)
 {
-   //[TODO]
-   printf("[TODO]\n");
+    _TEST_SUITE_TRACE_IN
+    char au8ClearData[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                       0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8EncryptedData[16] = {0};
+
+    sec_aes_ecb_enc(16, au8Key, au8ClearData, au8EncryptedData, 16);
+
+    // debug log
+    printf("Clear data(HEX), size = %d\n", sizeof(au8ClearData));
+    _DUMP(sizeof(au8ClearData), au8ClearData);
+    printf("Key data(HEX), size = %d\n", sizeof(au8Key));
+    _DUMP(sizeof(au8Key), au8Key);
+    printf("Encrypted data(HEX), size = %d\n", sizeof(au8EncryptedData));
+    _DUMP(sizeof(au8EncryptedData), au8EncryptedData);
+    printf("you can check result in online tool:\n");
+    printf("https://www.lddgo.net/en/encrypt/aes\n");
+    _TEST_SUITE_TRACE_OUT
 }
 
 static void test_aes_ecb_decrypt(void)
 {
-   //[TODO]
-   printf("[TODO]\n");
+    _TEST_SUITE_TRACE_IN
+    char au8ClearData[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                       0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8DecryptedData[16] = {0};
+
+    sec_aes_ecb_dec(16, au8Key, au8ClearData, au8DecryptedData, 16);
+
+    // debug log
+    printf("Clear data(HEX), size = %d\n", sizeof(au8ClearData));
+    _DUMP(sizeof(au8ClearData), au8ClearData);
+    printf("Key data(HEX), size = %d\n", sizeof(au8Key));
+    _DUMP(sizeof(au8Key), au8Key);
+    printf("Decrypted data(HEX), size = %d\n", sizeof(au8DecryptedData));
+    _DUMP(sizeof(au8DecryptedData), au8DecryptedData);
+    printf("you can check result in online tool:\n");
+    printf("https://www.lddgo.net/en/encrypt/aes\n");
+    _TEST_SUITE_TRACE_OUT
 }
 
 static void test_aes_cbc_encrypt(void)
 {
-   //[TODO]
-   printf("[TODO]\n");
-}
+    _TEST_SUITE_TRACE_IN
+    char au8ClearData[64] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
 
-static void test_aes_ctr_decrypt(void)
-{
-   //[TODO]
-   printf("[TODO]\n");
-}
+    char au8Key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                       0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
 
-static void test_aes_ctr_encrypt(void)
-{
-   //[TODO]
-   printf("[TODO]\n");
+    char au8Iv[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                      0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8EncryptedData[64] = {0};
+
+    sec_aes_cbc_enc(16, au8Key, au8Iv, au8ClearData, au8EncryptedData, sizeof(au8ClearData));
+
+    // debug log
+    printf("Clear data(HEX), size = %d\n", sizeof(au8ClearData));
+    _DUMP(sizeof(au8ClearData), au8ClearData);
+    printf("Key data(HEX), size = %d\n", sizeof(au8Key));
+    _DUMP(sizeof(au8Key), au8Key);
+    printf("Iv data(HEX), size = %d\n", sizeof(au8Iv));
+    _DUMP(sizeof(au8Iv), au8Iv);
+    printf("Ecrypted data(HEX), size = %d\n", sizeof(au8EncryptedData));
+    _DUMP(sizeof(au8EncryptedData), au8EncryptedData);
+    printf("you can check result in online tool:\n");
+    printf("https://www.lddgo.net/en/encrypt/aes\n");
+    _TEST_SUITE_TRACE_OUT
 }
 
 static void test_aes_cbc_decrypt(void)
 {
-   //[TODO]
-   printf("[TODO]\n");
+    _TEST_SUITE_TRACE_IN
+    char au8ClearData[64] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                       0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Iv[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                      0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8DecryptedData[64] = {0};
+    sec_aes_cbc_dec(16, au8Key, au8Iv, au8ClearData, au8DecryptedData, sizeof(au8ClearData));
+
+    // debug log
+    printf("Clear data(HEX), size = %d\n", sizeof(au8ClearData));
+    _DUMP(sizeof(au8ClearData), au8ClearData);
+    printf("Key data(HEX), size = %d\n", sizeof(au8Key));
+    _DUMP(sizeof(au8Key), au8Key);
+    printf("Iv data(HEX), size = %d\n", sizeof(au8Iv));
+    _DUMP(sizeof(au8Iv), au8Iv);
+    printf("Decrypted data(HEX), size = %d\n", sizeof(au8DecryptedData));
+    _DUMP(sizeof(au8DecryptedData), au8DecryptedData);
+    printf("you can check result in online tool:\n");
+    printf("https://www.lddgo.net/en/encrypt/aes\n");
+    _TEST_SUITE_TRACE_OUT
+}
+
+static void test_aes_ctr_encrypt(void)
+{
+    _TEST_SUITE_TRACE_IN
+    char au8ClearData[64] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                       0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Iv[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                      0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8EncryptedData[64] = {0};
+
+    sec_aes_ctr_enc(16, au8Key, au8Iv, au8ClearData, au8EncryptedData, sizeof(au8ClearData));
+
+    // debug log
+    printf("Clear data(HEX), size = %d\n", sizeof(au8ClearData));
+    _DUMP(sizeof(au8ClearData), au8ClearData);
+    printf("Key data(HEX), size = %d\n", sizeof(au8Key));
+    _DUMP(sizeof(au8Key), au8Key);
+    printf("Iv data(HEX), size = %d\n", sizeof(au8Iv));
+    _DUMP(sizeof(au8Iv), au8Iv);
+    printf("Ecrypted data(HEX), size = %d\n", sizeof(au8EncryptedData));
+    _DUMP(sizeof(au8EncryptedData), au8EncryptedData);
+    printf("you can check result in online tool:\n");
+    printf("https://www.lddgo.net/en/encrypt/aes\n");
+    _TEST_SUITE_TRACE_OUT
+}
+
+static void test_aes_ctr_decrypt(void)
+{
+    _TEST_SUITE_TRACE_IN
+    char au8ClearData[64] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                       0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Iv[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                      0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8DecryptedData[64] = {0};
+
+    sec_aes_ctr_dec(16, au8Key, au8Iv, au8ClearData, au8DecryptedData, sizeof(au8ClearData));
+
+    // debug log
+    printf("Clear data(HEX), size = %d\n", sizeof(au8ClearData));
+    _DUMP(sizeof(au8ClearData), au8ClearData);
+    printf("Key data(HEX), size = %d\n", sizeof(au8Key));
+    _DUMP(sizeof(au8Key), au8Key);
+    printf("Iv data(HEX), size = %d\n", sizeof(au8Iv));
+    _DUMP(sizeof(au8Iv), au8Iv);
+    printf("Derypted data(HEX), size = %d\n", sizeof(au8DecryptedData));
+    _DUMP(sizeof(au8DecryptedData), au8DecryptedData);
+    printf("you can check result in online tool:\n");
+    printf("https://www.lddgo.net/en/encrypt/aes\n");
+    _TEST_SUITE_TRACE_OUT
 }
 
 static void test_aes_cmac(void)
 {
-   //[TODO]
-   printf("[TODO]\n");
+    _TEST_SUITE_TRACE_IN
+    char au8ClearData[64] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                             0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+                       0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38};
+
+    char au8Cmac[16] = {0};
+
+    sec_aes_cmac(sizeof(au8Key), au8Key, au8ClearData, au8Cmac, sizeof(au8ClearData));
+
+
+    // debug log
+    printf("Clear data(HEX), size = %d\n", sizeof(au8ClearData));
+    _DUMP(sizeof(au8ClearData), au8ClearData);
+    printf("Key data(HEX), size = %d\n", sizeof(au8Key));
+    _DUMP(sizeof(au8Key), au8Key);
+    printf("Cmac(HEX), size = %d\n", sizeof(au8Cmac));
+    _DUMP(sizeof(au8Cmac), au8Cmac);
+
+    printf("you can check result in online tool:\n");
+    printf("https://artjomb.github.io/cryptojs-extension/\n");
+    _TEST_SUITE_TRACE_OUT
 }
 
 ////////////////////////////////////////////////////////////////////////

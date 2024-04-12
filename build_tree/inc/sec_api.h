@@ -14,6 +14,16 @@ int sec_hash_sha384(char * msg, char* sha_out, int msg_len);
 int sec_hash_sha512(char * msg, char* sha_out, int msg_len);
 
 // AES
+int sec_aes_ecb_enc(int key_size_in_bytes, char *add_key, char *add_src, char *add_dest, int tr_size_in_bytes);
+int sec_aes_ecb_dec(int key_size_in_bytes, char *add_key, char *add_src, char *add_dest, int tr_size_in_bytes);
+
+int sec_aes_cbc_enc(int key_size_in_bytes, char *add_key, char *add_iv, char *add_src, char *add_dest, int tr_size_in_bytes);
+int sec_aes_cbc_dec(int key_size_in_bytes, char *add_key, char *add_iv, char *add_src, char *add_dest, int tr_size_in_bytes);
+
+int sec_aes_ctr_enc(int key_size_in_bytes, char *add_key, char *add_iv, char *add_src, char *add_dest, int tr_size_in_bytes);
+int sec_aes_ctr_dec(int key_size_in_bytes, char *add_key, char *add_iv, char *add_src, char *add_dest, int tr_size_in_bytes);
+
+int sec_aes_cmac(int key_size_in_bytes, char *add_key, char *add_src, char *add_dest, int tr_size_in_bytes);
 
 // RSA
 void sec_GenRandomBuffer(char *out_buf, int size);

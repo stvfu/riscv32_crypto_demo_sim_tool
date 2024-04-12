@@ -9,6 +9,7 @@
 #include <mbedtls_test.h>
 
 #include "mbedtls/rsa.h"
+#include "mbedtls/cmac.h"
 #include "mbedtls/entropy.h"
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/platform.h"
@@ -125,6 +126,123 @@ int sec_hash_sha512(char * msg, char* sha_out, int msg_len)
     return 0;
 }
 
+// AES
+int sec_aes_ecb_enc(int key_size_in_bytes,
+                    char *add_key,
+                    char *add_src,
+                    char *add_dest,
+                    int tr_size_in_bytes)
+{
+    _SEC_TRACE_IN
+    mbedtls_aes_context aes_ctx;
+    mbedtls_aes_init(&aes_ctx);
+    mbedtls_aes_setkey_enc( &aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_ecb( &aes_ctx, MBEDTLS_AES_ENCRYPT, add_src, add_dest);
+    mbedtls_aes_free( &aes_ctx );
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_aes_ecb_dec(int key_size_in_bytes,
+                    char *add_key,
+                    char *add_src,
+                    char *add_dest,
+                    int tr_size_in_bytes)
+{
+    _SEC_TRACE_IN
+    mbedtls_aes_context aes_ctx;
+    mbedtls_aes_init(&aes_ctx);
+    mbedtls_aes_setkey_dec(&aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_ecb(&aes_ctx, MBEDTLS_AES_DECRYPT, add_src, add_dest);
+    mbedtls_aes_free(&aes_ctx);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_aes_cbc_enc(int key_size_in_bytes,
+                    char *add_key,
+                    char *add_iv,
+                    char *add_src,
+                    char *add_dest,
+                    int tr_size_in_bytes)
+{
+    _SEC_TRACE_IN
+    mbedtls_aes_context aes_ctx;
+    mbedtls_aes_init(&aes_ctx);
+    mbedtls_aes_setkey_enc(&aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_cbc(&aes_ctx, MBEDTLS_AES_ENCRYPT, tr_size_in_bytes, add_iv, add_src, add_dest);
+    mbedtls_aes_free(&aes_ctx);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_aes_cbc_dec(int key_size_in_bytes,
+                    char *add_key,
+                    char *add_iv,
+                    char *add_src,
+                    char *add_dest,
+                    int tr_size_in_bytes)
+{
+    _SEC_TRACE_IN
+    mbedtls_aes_context aes_ctx;
+    mbedtls_aes_init(&aes_ctx);
+    mbedtls_aes_setkey_dec(&aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_cbc(&aes_ctx, MBEDTLS_AES_DECRYPT, tr_size_in_bytes, add_iv, add_src, add_dest);
+    mbedtls_aes_free(&aes_ctx);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+
+int sec_aes_ctr_enc(int key_size_in_bytes,
+                    char *add_key,
+                    char *add_iv,
+                    char *add_src,
+                    char *add_dest,
+                    int tr_size_in_bytes)
+{
+    _SEC_TRACE_IN
+    int idx;
+    symmetric_CTR ctr;
+    register_cipher(&aes_desc);
+    idx = find_cipher("aes");
+    ctr_start(idx, add_iv, add_key, key_size_in_bytes, 0, CTR_COUNTER_BIG_ENDIAN, &ctr);
+    ctr_encrypt(add_src, add_dest, tr_size_in_bytes, &ctr);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_aes_ctr_dec(int key_size_in_bytes,
+                    char *add_key,
+                    char *add_iv,
+                    char *add_src,
+                    char *add_dest,
+                    int tr_size_in_bytes)
+{
+    _SEC_TRACE_IN
+    int idx;
+    symmetric_CTR ctr;
+    register_cipher(&aes_desc);
+    idx = find_cipher("aes");
+    ctr_start(idx, add_iv, add_key, key_size_in_bytes, 0, CTR_COUNTER_BIG_ENDIAN, &ctr);
+    ctr_decrypt(add_src, add_dest, tr_size_in_bytes, &ctr);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+
+int sec_aes_cmac(int key_size_in_bytes,
+                 char *add_key,
+                 char *add_src,
+                 char *add_dest,
+                 int tr_size_in_bytes)
+{
+    _SEC_TRACE_IN
+    mbedtls_aes_cmac_prf_128(add_key, key_size_in_bytes, add_src, tr_size_in_bytes, add_dest);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
 // RSA
 int sec_rsa_generate_key(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits)
 {
@@ -170,7 +288,7 @@ void sec_GenRsaKey_impl(char* n, char* p, char* q, char* dP, char* dQ, char* qIn
     assert_exit(ret == 0, ret);
     mbedtls_printf("\n  . setup rng ... ok\n");
     mbedtls_printf("\n  ! RSA Generating large primes may take minutes!(5~10 mins) \n");
-  
+
     // gen RSA key
     ret = mbedtls_rsa_gen_key(&ctx, mbedtls_ctr_drbg_random, // random
                                         &ctr_drbg, // random struct
