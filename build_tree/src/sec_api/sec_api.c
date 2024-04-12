@@ -3,6 +3,8 @@
 #include <stdint.h>
 
 #include <sec_api.h>
+#include <tomcrypt.h>
+
 #include <libtom_test.h>
 #include <mbedtls_test.h>
 
@@ -29,6 +31,11 @@
         goto cleanup; \
     } } while (0)
 
+#define _SEC_TRACE_IN  printf("[%s][%d] IN\n", __func__,__LINE__);
+#define _SEC_TRACE_OUT printf("[%s][%d] OUT\n", __func__,__LINE__);
+
+void sec_GenRsaKey_impl(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits);
+
 static void _DUMP_(int length, char *Adr)
 {
     int i;
@@ -47,61 +54,73 @@ static void _DUMP_(int length, char *Adr)
     printf("\n\n");
 }
 
-void sec_GenRsaKey_impl(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits);
-
-
-void sec_GenRandomBuffer(char *out_buf, int size, CryptoLib eLibSetting)
-{
-    switch(eLibSetting)
-    {
-        case ENUM_MBEDTLS:
-            printf("mbedtls Gen Random Buffer Test\n");
-            printf("  Not Support\n");
-        printf("\n\n");
-        break;
-        case ENUM_LIBTOM:
-            printf("Libtom Gen Random Buffer Test\n");
-        libtom_gen_random_buffer(out_buf, size);
-            printf("\n\n");
-        break;
-    default:
-        printf("Not Support\n");
-            break;
-    }
-}
-
+// random
 int sw_entropy(void *data, unsigned char *output, size_t size) {
     ((void) data);
-    sec_GenRandomBuffer((char *)output, (int)size, ENUM_LIBTOM);
+    sec_generate_random_buffer((char *)output, (int)size);
     return 0;
 }
 
-static void dump_buf(char *info, uint8_t *buf, uint32_t len)
+int sec_generate_random_buffer(char *out_buf, int size)
 {
-    mbedtls_printf("%s", info);
-    for (int i = 0; i < len; i++) {
-        mbedtls_printf("%s%02X%s", i % 16 == 0 ? "\n     ":" ",
-                        buf[i], i == len - 1 ? "\n":"");
-    }
+    _SEC_TRACE_IN
+    libtom_gen_random_buffer(out_buf, size);
+    _SEC_TRACE_OUT
+    return 0;
 }
 
-void sec_GenRsaKey(void)
+// SHA
+int sec_hash_sha1(char * msg, char* sha_out, int msg_len)
 {
-    char n[256]={0};
-    char e[3]={0x1, 0x0, 0x01}; // 65537
-    char d[256]={0};
-    char p[128]={0};
-    char q[128]={0};
-    char dP[128]={0};
-    char dQ[128]={0};
-    char qInv[128]={0};
+    _SEC_TRACE_IN
+    hash_state md_sha1;
+    sha1_init(&md_sha1);
+    sha1_process(&md_sha1, msg, msg_len); // size_of data
+    sha1_done(&md_sha1,sha_out);
+    _SEC_TRACE_OUT
+    return 0;
+}
 
-    sec_GenRsaKey_impl(n, p, q, dP, dQ, qInv, 65537, 2048);
+int sec_hash_sha224(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    printf("[TODO]\n");
+    _SEC_TRACE_OUT
+    return 0;
+}
 
-    printf("\n N Key\n");
+int sec_hash_sha256(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    printf("[TODO]\n");
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_hash_sha384(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    printf("[TODO]\n");
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_hash_sha512(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    printf("[TODO]\n");
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+// RSA
+int sec_rsa_generate_key(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits)
+{
+    sec_GenRsaKey_impl(n, p, q, dP, dQ, qInv, e_value, size_n_bits);
+
+    printf("\n N Key (%d)\n", size_n_bits);
     _DUMP_(256, (char *)n);
-    printf("\n E Key\n");
-    _DUMP_(3,   (char *)e);
+    printf("\n E Key = %d\n", e_value);
     printf("\n P Key\n");
     _DUMP_(128, (char *)p);
     printf("\n Q Key\n");
@@ -112,6 +131,8 @@ void sec_GenRsaKey(void)
     _DUMP_(128, (char *)dQ);
     printf("\n qInv:\n");
     _DUMP_(128, (char *)qInv);
+    _SEC_TRACE_OUT
+    return 0;
 }
 
 void sec_GenRsaKey_impl(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits)

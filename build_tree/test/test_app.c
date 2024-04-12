@@ -10,6 +10,9 @@ typedef struct MENU{
     void (*func_ptr)(void);
 }MENU;
 
+#define _TEST_SUITE_TRACE_IN  printf("[%s][%d] Test case start\n", __func__,__LINE__);
+#define _TEST_SUITE_TRACE_OUT printf("[%s][%d] Test case end\n", __func__,__LINE__);
+
 static void test(void);
 static void test_printf(void);
 static void test_lib(void);
@@ -74,9 +77,28 @@ static MENU MENU_TABLE[] = {
     { "test ecc gen key",                    &test_ecc_genkey},
     { "test ecdsa verify",                   &test_ecdsa_verify},
     { "test ecdsa sign",                     &test_ecdsa_sign},
+
     // other
     { "(todo)test case template",            &test},
 };
+
+static void _DUMP(int length, char *Adr)
+{
+    int i;
+    for(i=0;i<length;i++)
+    {
+        if(i % 16 == 0)
+        {
+                printf("\n0x%.4X: ",i + (int)Adr);
+        }
+
+        if(i % 8 == 0)
+            printf(" ");
+
+        printf("%.2X ",(int)Adr[i]);
+    }
+    printf("\n\n");
+}
 
 ////////////////////////////////////////////////////////////////////////
 // common api
@@ -113,20 +135,7 @@ static void test_mebtls(void)
 static void test_random(void)
 {
     char random_buffer[32] = {0};
-    //sec_GenRandomBuffer(random_buffer, 32, ENUM_MBEDTLS);
-    sec_GenRandomBuffer(random_buffer, 32, ENUM_LIBTOM);
-}
-
-static void test_random_libtom(void)
-{
-    char random_buffer[32] = {0};
-    sec_GenRandomBuffer(random_buffer, 32, ENUM_MBEDTLS);
-}
-
-static void test_random_mbedtls(void)
-{
-    char random_buffer[32] = {0};
-    sec_GenRandomBuffer(random_buffer, 32, ENUM_LIBTOM);
+    sec_generate_random_buffer(random_buffer, 32);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -134,8 +143,26 @@ static void test_random_mbedtls(void)
 ////////////////////////////////////////////////////////////////////////
 static void test_sha1(void)
 {
-   //[TODO]
-   printf("[TODO]\n");
+    _TEST_SUITE_TRACE_IN
+
+    // test data
+    char au8Data[10] ={0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39};
+    char au8Hash[64]={0};
+
+    // how to call sw api
+    sec_hash_sha1(au8Data, au8Hash, sizeof(au8Data));
+
+    // debug log
+    printf("data(HEX), size = %d\n", sizeof(au8Data));
+    _DUMP(sizeof(au8Data), au8Data);
+    _DUMP(20, au8Hash);
+    printf("you can check result in online tool:\n");
+    printf("https://emn178.github.io/online-tools/sha1.html\n");
+    printf("https://emn178.github.io/online-tools/sha1.html\n");
+    printf("https://emn178.github.io/online-tools/sha1.html\n");
+    printf("https://emn178.github.io/online-tools/sha1.html\n");
+    printf("https://emn178.github.io/online-tools/sha1.html\n");
+    _TEST_SUITE_TRACE_OUT
 }
 
 static void test_sha256(void)
@@ -206,7 +233,32 @@ static void test_aes_cmac(void)
 ////////////////////////////////////////////////////////////////////////
 static void test_rsa_genkey(void)
 {
-    sec_GenRsaKey();
+    char n[256]={0};
+    char e[3]={0x1, 0x0, 0x01}; // 65537
+    char d[256]={0};
+    char p[128]={0};
+    char q[128]={0};
+    char dP[128]={0};
+    char dQ[128]={0};
+    char qInv[128]={0};
+
+    sec_rsa_generate_key(n, p, q, dP, dQ, qInv, 65537, 2048);
+    //sec_GenRsaKey();
+
+    printf("\n N Key\n");
+    _DUMP(256, n);
+    printf("\n E Key\n");
+    _DUMP(3,   e);
+    printf("\n P Key\n");
+    _DUMP(128, p);
+    printf("\n Q Key\n");
+    _DUMP(128, q);
+    printf("\n dP\n");
+    _DUMP(128, dP);
+    printf("\n dQ:\n");
+    _DUMP(128, dQ);
+    printf("\n qInv:\n");
+    _DUMP(128, qInv);
 }
 
 static void test_rsa_sign(void)
