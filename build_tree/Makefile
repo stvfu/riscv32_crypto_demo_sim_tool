@@ -14,6 +14,7 @@ OUTPUT_PATH=./out
 INCDIR += -I./inc 
 INCDIR += -I./inc/libtom 
 INCDIR += -I./inc/mbedtls
+INCDIR += -I./rot_wrapper
 
 # mbedtsl macro
 CFLAGS+= -DMBEDTLS_ALLOW_PRIVATE_ACCESS
@@ -27,6 +28,7 @@ LDLIBS += -L./lib/mbedtls/$(TOOLCHAIN_PREFIX)
 #source
 SRCS += $(wildcard src/*.c)
 SRCS += $(wildcard src/sec_api/*.c)
+SRCS += $(wildcard rot_wrapper/*.c)
 
 LIBS += -ltomcrypt
 LIBS += -lmbedcrypto -lmbedtls -lmbedx509
