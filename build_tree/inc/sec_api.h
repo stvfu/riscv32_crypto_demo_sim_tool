@@ -29,4 +29,6 @@ int sec_aes_cmac(int key_size_in_bytes, char *add_key, char *add_src, char *add_
 void sec_GenRandomBuffer(char *out_buf, int size);
 void sec_GenRsaKey(void);
 int sec_rsa_generate_key(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits);
+int sec_rsa_verify(char* n, char* exp, int size_n_in_words, int size_e_in_words, int hash_type, char *add_message, int message_size_in_words, char *add_signature, int signature_size_in_words);
+
 // ECC

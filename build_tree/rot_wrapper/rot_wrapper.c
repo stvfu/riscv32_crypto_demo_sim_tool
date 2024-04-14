@@ -190,7 +190,14 @@ rot_error_t rot_rsa_generate_key(uint32_t* const n,
                                  uint32_t size_n_in_words)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_rsa_generate_key((char*)n,
+                         (char*)p,
+                         (char*)q,
+                         (char*)dP,
+                         (char*)dQ,
+                         (char*)qInv,
+                         (int)65537,
+                         (int)size_n_in_words);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -206,23 +213,15 @@ rot_error_t rot_rsa_verify(uint32_t* n,
                            uint32_t signature_size_in_words)
 {
     _ROT_TRACE_IN
-    // [TODO]
-    _ROT_TRACE_OUT
-    return 0;
-}
-
-rot_error_t rot_rsa_sign(uint32_t* n,
-                         uint32_t* exp,
-                         uint16_t  size_n_in_words,
-                         uint16_t  size_e_in_words,
-                         uint32_t  hash_type,
-                         const uint32_t  *add_message,
-                         uint32_t message_size_in_words,
-                         const uint32_t  *add_signature,
-                         uint32_t signature_size_in_words)
-{
-    _ROT_TRACE_IN
-    // [TODO]
+    sec_rsa_verify((char*)n,
+                   (char*)exp,
+                   (int)(size_n_in_words),
+                   (int)(size_e_in_words),
+                   (int)hash_type,
+                   (char *)add_message,
+                   (int)message_size_in_words,
+                   (char *)add_signature,
+                   (int)signature_size_in_words);
     _ROT_TRACE_OUT
     return 0;
 }

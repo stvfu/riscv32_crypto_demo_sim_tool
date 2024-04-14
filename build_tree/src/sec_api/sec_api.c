@@ -225,7 +225,7 @@ int sec_aes_cbc_dec(int key_size_in_bytes,
     _SEC_TRACE_IN
     unsigned char au8iv[16] = {0};
     memcpy((void *)au8iv, (const void *)add_iv, 16);
-    
+
     mbedtls_aes_context aes_ctx;
     mbedtls_aes_init(&aes_ctx);
     mbedtls_aes_setkey_dec(&aes_ctx,
@@ -412,7 +412,6 @@ cleanup:
     return;
 }
 
-
 int sec_rsa_verify(char* n,
                    char* exp,
                    int size_n_in_words,
@@ -424,23 +423,73 @@ int sec_rsa_verify(char* n,
                    int signature_size_in_words)
 {
     _SEC_TRACE_IN
-    // [TODO]
+    int u32Res = 0;
+    size_t olen = 0;
+    uint8_t buf[516]={0};
+
+    mbedtls_rsa_context ctx; // RSA context
+    mbedtls_rsa_init(&ctx); // init RSA context
+    mbedtls_rsa_set_padding(&ctx, 0, MBEDTLS_MD_NONE);
+
+    mbedtls_rsa_import_raw(&ctx,
+                           (unsigned char const *)n,
+                           (size_t)size_n_in_words,
+                           NULL, //P
+                           0,
+                           NULL, //Q
+                           0,
+                           NULL, //D
+                           0,
+                           (unsigned char const *)exp,
+                           (size_t)size_e_in_words
+                           );
+
+    mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
+    mbedtls_mpi_write_string(&ctx.N , 16, (char *)buf, sizeof(buf), &olen);
+    mbedtls_printf("N: %s\n", buf);
+
+    mbedtls_mpi_write_string(&ctx.E , 16, (char *)buf, sizeof(buf), &olen);
+    mbedtls_printf("E: %s\n", buf);
+
+    u32Res = mbedtls_rsa_pkcs1_verify(&ctx,
+                           (mbedtls_md_type_t)hash_type,
+                           (unsigned int)message_size_in_words,
+                           (const unsigned char *)add_message,
+                           (const unsigned char *)add_signature);
+    if(u32Res ==0)
+    {
+        printf("\033[32m Sig Verify Pass!\033[0m\n");
+
+    }
+    else
+    {
+        printf("\033[31m Sig Verify Fail!\033[0m\n");
+    }
+
+    mbedtls_rsa_free(&ctx);         // release rsa struct
     _SEC_TRACE_OUT
-    return 0;
+    return u32Res;
 }
 
-int sec_rsa_sign(char* n,
-                 char* exp,
-                 int size_n_in_words,
-                 int size_e_in_words,
+int sec_rsa_sign(char* p,
+                 char* q,
+                 char* dp,
+                 char* dq,
+                 char* qinv,
+                 int size_p_in_words,
+                 int size_q_in_words,
+                 int size_dp_in_words,
+                 int size_dq_in_words,
+                 int size_qinv_in_words,
                  int hash_type,
                  char *add_message,
                  int message_size_in_words,
                  char *add_signature,
                  int signature_size_in_words)
 {
+
     _SEC_TRACE_IN
-    // [TODO]
+    //[TODO]
     _SEC_TRACE_OUT
     return 0;
 }
