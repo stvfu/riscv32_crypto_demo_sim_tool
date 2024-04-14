@@ -95,7 +95,7 @@ void libtom_aes_cbc_test(void)
     unsigned char pt[TEST_BUFFER_SIZE] = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
     unsigned char encrypt_buf[TEST_BUFFER_SIZE] = { 0 };
 
-    char key[16] = "1234567812345678";
+    unsigned char key[16] = "1234567812345678";
     unsigned char iv[16] = IV_DATA;
 
     unsigned char ct[64], tmp[64], iv2[16];
@@ -107,13 +107,13 @@ void libtom_aes_cbc_test(void)
     register_cipher(&aes_desc);
 
     printf("  test buf:");
-    _DUMP_(64, pt);
+    _DUMP_(64, (char *)pt);
 
     printf("  key buf:");
-    _DUMP_(16, key);
+    _DUMP_(16, (char *)key);
 
     printf("  iv buf:");
-    _DUMP_(16, iv);
+    _DUMP_(16, (char *)iv);
 
     /* get idx of AES handy */
     cipher_idx = find_cipher("aes");
@@ -133,7 +133,7 @@ void libtom_aes_cbc_test(void)
     }
     cbc_encrypt(pt, ct, 64, &cbc);
     printf("  encrypted to orig buf:");
-    _DUMP_(64, ct);
+    _DUMP_(64, (char *)ct);
 
     /* decode the block */
     cbc_setiv(iv2, l, &cbc);
@@ -144,7 +144,7 @@ void libtom_aes_cbc_test(void)
        return;
     }
     printf("  decrypted to orig buf:");
-    _DUMP_(64, tmp);
+    _DUMP_(64, (char *)tmp);
 
     printf("online tool verify: https://www.lddgo.net/en/encrypt/aes\n");
     return;
@@ -153,67 +153,71 @@ void libtom_aes_cbc_test(void)
 void libtom_gen_random_buffer(char* out_buf, int size)
 {
     unsigned long res = 0;
-    unsigned char *random_buffer = malloc(size);
+    unsigned char *random_buffer = malloc((unsigned int)size);
 
-    res = rng_get_bytes(random_buffer, size, NULL);
-
-    memcpy(out_buf, random_buffer, size);
-    _DUMP_(size, random_buffer);
+    res = rng_get_bytes(random_buffer, (long unsigned int)size, NULL);
+    if(res != 0)
+    {
+        printf("res = %ld\n", res);
+    }
+    memcpy(out_buf, random_buffer, (unsigned int)size);
+    _DUMP_(size, (char *)random_buffer);
     free(random_buffer);
 }
 
 void libtom_test(void)
 {
+    const unsigned char libtom_sha_test_string[] = "Hello, world!";
+    int x;
+    unsigned long res = 0;
+
     printf("\n\033[33m  libtom aes cbc test\033[0m\n");
     libtom_aes_cbc_test();
 
     //unsigned char data[]={0x0,0x1,0x2,0x3,0x4};
-    char string[] = "Hello, world!";
-    int x;
-
     //int hash_idx = register_hash(&sha256_desc);
     unsigned char hash[64]={0};
 
     printf("\n\033[33m  libtom md5 test\033[0m\n");
     hash_state md_md5;
     md5_init(&md_md5);
-    md5_process(&md_md5, string, 13); // size_of data
+    md5_process(&md_md5, libtom_sha_test_string, 13); // size_of data
     md5_done(&md_md5,hash);
-    _DUMP_(16, hash);
-
+    _DUMP_(16, (char *)hash);
 
     printf("\n\033[33m  libtom sha1 test\033[0m\n");
     hash_state md_sha1;
     sha1_init(&md_sha1);
-    sha1_process(&md_sha1, string, 13); // size_of data
+    sha1_process(&md_sha1, libtom_sha_test_string, 13); // size_of data
     sha1_done(&md_sha1,hash);
-    _DUMP_(20, hash);
-
+    _DUMP_(20, (char *)hash);
 
     printf("\n\033[33m  libtom sha256 test\033[0m\n");
     hash_state md_sha256;
     sha256_init(&md_sha256);
-    sha256_process(&md_sha256, string, 13); // size_of data
+    sha256_process(&md_sha256, libtom_sha_test_string, 13); // size_of data
     sha256_done(&md_sha256,hash);
-    _DUMP_(32, hash);
+    _DUMP_(32, (char *)hash);
 
     printf("\n\033[33m  libtom sha512 test\033[0m\n");
     hash_state md_sha512;
     sha512_init(&md_sha512);
-    sha512_process(&md_sha512, string, 13); // size_of data
+    sha512_process(&md_sha512, libtom_sha_test_string, 13); // size_of data
     sha512_done(&md_sha512,hash);
-    _DUMP_(64, hash);
-
+    _DUMP_(64, (char *)hash);
 
     printf("\n\n\033[33m  libtom gen random test 1\033[0m\n");
-    unsigned long res = 0;
     unsigned char random_buffer[32] = {0};
     res = rng_get_bytes(random_buffer, 32, NULL);
-     _DUMP_(32, random_buffer);
+     _DUMP_(32, (char *)random_buffer);
 
     printf("\n\n\033[33m  libtom gen random test 1\033[0m\n");
     res = rng_get_bytes(random_buffer, 32, NULL);
-    _DUMP_(32, random_buffer);
+    _DUMP_(32, (char *)random_buffer);
+    if(res != 0)
+    {
+        printf("res = %ld\n", res);
+    }
     return;
 }
 
