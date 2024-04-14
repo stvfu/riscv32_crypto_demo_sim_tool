@@ -79,6 +79,7 @@ LIBS += -lmbedcrypto -lmbedtls -lmbedx509
 
 # object
 OBJS := $(SRCS:.c=.o)
+SUS := $(SRCS:.c=.su)
 
 all: $(BIN) $(TARGET)
 
@@ -102,5 +103,6 @@ $(TARGET): $(OBJS)
 clean:
 	@echo '  CLEAN $(OUTPUT_PATH)'
 	$(Q)rm -rf $(OBJS)
+	$(Q)rm -rf $(SUS)
 	$(Q)rm -rf $(OUTPUT_PATH)
 
