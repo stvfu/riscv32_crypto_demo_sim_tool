@@ -52,11 +52,11 @@ rot_error_t rot_bc_aes_ctr_dec(uint8_t key_size_in_bytes,
                                uint32_t *add_dest,
                                uint32_t tr_size_in_bytes);
 
-rot_error_t rot_bc_aes_cbc(uint8_t key_size_in_bytes,
-                           uint32_t *add_key,
-                           uint32_t *add_src,
-                           uint32_t *add_dest,
-                           uint32_t tr_size_in_bytes);
+rot_error_t rot_bc_aes_cmac(uint8_t key_size_in_bytes,
+                            uint32_t *add_key,
+                            uint32_t *add_src,
+                            uint32_t *add_dest,
+                            uint32_t tr_size_in_bytes);
 
 // RSA
 rot_error_t rot_rsa_generate_key(uint32_t* const n,

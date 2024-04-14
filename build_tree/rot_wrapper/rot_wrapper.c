@@ -67,7 +67,11 @@ rot_error_t rot_bc_aes_ecb_enc(uint8_t key_size_in_bytes,
                                uint32_t tr_size_in_bytes)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_aes_ecb_enc((int)key_size_in_bytes,
+                    (char *)add_key,
+                    (char *)add_src,
+                    (char *)add_dest,
+                    (int)tr_size_in_bytes);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -79,11 +83,14 @@ rot_error_t rot_bc_aes_ecb_dec(uint8_t key_size_in_bytes,
                                uint32_t tr_size_in_bytes)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_aes_ecb_dec((int)key_size_in_bytes,
+                    (char *)add_key,
+                    (char *)add_src,
+                    (char *)add_dest,
+                    (int)tr_size_in_bytes);
     _ROT_TRACE_OUT
     return 0;
 }
-
 
 rot_error_t rot_bc_aes_cbc_enc(uint8_t key_size_in_bytes,
                                uint32_t *add_key,
@@ -93,7 +100,12 @@ rot_error_t rot_bc_aes_cbc_enc(uint8_t key_size_in_bytes,
                                uint32_t tr_size_in_bytes)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_aes_cbc_enc((int)key_size_in_bytes,
+                    (char *)add_key,
+                    (char *)add_iv,
+                    (char *)add_src,
+                    (char *)add_dest,
+                    (int)tr_size_in_bytes);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -106,7 +118,12 @@ rot_error_t rot_bc_aes_cbc_dec(uint8_t key_size_in_bytes,
                                uint32_t tr_size_in_bytes)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_aes_cbc_dec((int)key_size_in_bytes,
+                    (char *)add_key,
+                    (char *)add_iv,
+                    (char *)add_src,
+                    (char *)add_dest,
+                    (int)tr_size_in_bytes);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -119,7 +136,12 @@ rot_error_t rot_bc_aes_ctr_enc(uint8_t key_size_in_bytes,
                                uint32_t tr_size_in_bytes)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_aes_ctr_enc((int)key_size_in_bytes,
+                    (char *)add_key,
+                    (char *)add_iv,
+                    (char *)add_src,
+                    (char *)add_dest,
+                    (int)tr_size_in_bytes);
     _ROT_TRACE_OUT
     return 0;
 }
@@ -132,19 +154,28 @@ rot_error_t rot_bc_aes_ctr_dec(uint8_t key_size_in_bytes,
                                uint32_t tr_size_in_bytes)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_aes_ctr_dec((int)key_size_in_bytes,
+                    (char *)add_key,
+                    (char *)add_iv,
+                    (char *)add_src,
+                    (char *)add_dest,
+                    (int)tr_size_in_bytes);
     _ROT_TRACE_OUT
     return 0;
 }
 
-rot_error_t rot_bc_aes_cbc(uint8_t key_size_in_bytes,
-                           uint32_t *add_key,
-                           uint32_t *add_src,
-                           uint32_t *add_dest,
-                           uint32_t tr_size_in_bytes)
+rot_error_t rot_bc_aes_cmac(uint8_t key_size_in_bytes,
+                            uint32_t *add_key,
+                            uint32_t *add_src,
+                            uint32_t *add_dest,
+                            uint32_t tr_size_in_bytes)
 {
     _ROT_TRACE_IN
-    // [TODO]
+    sec_aes_cmac((int)key_size_in_bytes,
+                 (char *)add_key,
+                 (char *)add_src,
+                 (char *)add_dest,
+                 (int)tr_size_in_bytes);
     _ROT_TRACE_OUT
     return 0;
 }
