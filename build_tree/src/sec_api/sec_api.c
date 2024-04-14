@@ -76,8 +76,11 @@ int sec_hash_sha1(char * msg, char* sha_out, int msg_len)
     _SEC_TRACE_IN
     hash_state md_sha1;
     sha1_init(&md_sha1);
-    sha1_process(&md_sha1, msg, msg_len); // size_of data
-    sha1_done(&md_sha1,sha_out);
+    sha1_process(&md_sha1,
+                 (const unsigned char *)msg,
+                 (long unsigned int)msg_len); // size_of data
+    sha1_done(&md_sha1,
+             (unsigned char *)sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -87,8 +90,11 @@ int sec_hash_sha224(char * msg, char* sha_out, int msg_len)
     _SEC_TRACE_IN
     hash_state md_sha224;
     sha224_init(&md_sha224);
-    sha224_process(&md_sha224, msg, msg_len); // size_of data
-    sha224_done(&md_sha224,sha_out);
+    sha224_process(&md_sha224,
+                   (const unsigned char *)msg,
+                   (long unsigned int)msg_len); // size_of data
+    sha224_done(&md_sha224,
+                (unsigned char *)sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -98,8 +104,11 @@ int sec_hash_sha256(char * msg, char* sha_out, int msg_len)
     _SEC_TRACE_IN
     hash_state md_sha256;
     sha256_init(&md_sha256);
-    sha256_process(&md_sha256, msg, msg_len); // size_of data
-    sha256_done(&md_sha256,sha_out);
+    sha256_process(&md_sha256,
+                   (const unsigned char *)msg,
+                   (long unsigned int)msg_len); // size_of data
+    sha256_done(&md_sha256,
+                (unsigned char *)sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -109,8 +118,11 @@ int sec_hash_sha384(char * msg, char* sha_out, int msg_len)
     _SEC_TRACE_IN
     hash_state md_sha384;
     sha384_init(&md_sha384);
-    sha384_process(&md_sha384, msg, msg_len); // size_of data
-    sha384_done(&md_sha384,sha_out);
+    sha384_process(&md_sha384,
+                   (const unsigned char *)msg,
+                   (long unsigned int)msg_len); // size_of data
+    sha384_done(&md_sha384,
+                (unsigned char *)sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -120,8 +132,11 @@ int sec_hash_sha512(char * msg, char* sha_out, int msg_len)
     _SEC_TRACE_IN
     hash_state md_sha512;
     sha512_init(&md_sha512);
-    sha512_process(&md_sha512, msg, msg_len); // size_of data
-    sha512_done(&md_sha512,sha_out);
+    sha512_process(&md_sha512,
+                   (const unsigned char *)msg,
+                   (long unsigned int)msg_len); // size_of data
+    sha512_done(&md_sha512,
+                (unsigned char *)sha_out);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -134,11 +149,18 @@ int sec_aes_ecb_enc(int key_size_in_bytes,
                     int tr_size_in_bytes)
 {
     _SEC_TRACE_IN
+    unsigned char au8EcbEncryptRes[16] = {0};
     mbedtls_aes_context aes_ctx;
     mbedtls_aes_init(&aes_ctx);
-    mbedtls_aes_setkey_enc( &aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
-    mbedtls_aes_crypt_ecb( &aes_ctx, MBEDTLS_AES_ENCRYPT, add_src, add_dest);
-    mbedtls_aes_free( &aes_ctx );
+    mbedtls_aes_setkey_dec(&aes_ctx,
+                           (const unsigned char *)add_key,
+                           (unsigned int)(key_size_in_bytes*8)); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_ecb(&aes_ctx,
+                          MBEDTLS_AES_ENCRYPT,
+                          (const unsigned char *)add_src,
+                          au8EcbEncryptRes);
+    memcpy((void *)add_dest, (const void *)au8EcbEncryptRes, 16);
+    mbedtls_aes_free(&aes_ctx);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -150,10 +172,17 @@ int sec_aes_ecb_dec(int key_size_in_bytes,
                     int tr_size_in_bytes)
 {
     _SEC_TRACE_IN
+    unsigned char au8EcbDecryptRes[16] = {0};
     mbedtls_aes_context aes_ctx;
     mbedtls_aes_init(&aes_ctx);
-    mbedtls_aes_setkey_dec(&aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
-    mbedtls_aes_crypt_ecb(&aes_ctx, MBEDTLS_AES_DECRYPT, add_src, add_dest);
+    mbedtls_aes_setkey_dec(&aes_ctx,
+                           (const unsigned char *)add_key,
+                           (unsigned int)(key_size_in_bytes*8)); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_ecb(&aes_ctx,
+                          MBEDTLS_AES_DECRYPT,
+                          (const unsigned char *)add_src,
+                          au8EcbDecryptRes);
+    memcpy((void *)add_dest, (const void *)au8EcbDecryptRes, 16);
     mbedtls_aes_free(&aes_ctx);
     _SEC_TRACE_OUT
     return 0;
@@ -167,10 +196,20 @@ int sec_aes_cbc_enc(int key_size_in_bytes,
                     int tr_size_in_bytes)
 {
     _SEC_TRACE_IN
+    unsigned char au8iv[16] = {0};
+    memcpy((void *)au8iv, (const void *)add_iv, 16);
+
     mbedtls_aes_context aes_ctx;
     mbedtls_aes_init(&aes_ctx);
-    mbedtls_aes_setkey_enc(&aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
-    mbedtls_aes_crypt_cbc(&aes_ctx, MBEDTLS_AES_ENCRYPT, tr_size_in_bytes, add_iv, add_src, add_dest);
+    mbedtls_aes_setkey_enc(&aes_ctx,
+                           (const unsigned char *)add_key,
+                           (unsigned int)(key_size_in_bytes*8)); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_cbc(&aes_ctx,
+                          MBEDTLS_AES_ENCRYPT,
+                          (size_t)tr_size_in_bytes,
+                          au8iv,
+                          (const unsigned char *)add_src,
+                          (unsigned char *)add_dest);
     mbedtls_aes_free(&aes_ctx);
     _SEC_TRACE_OUT
     return 0;
@@ -184,10 +223,20 @@ int sec_aes_cbc_dec(int key_size_in_bytes,
                     int tr_size_in_bytes)
 {
     _SEC_TRACE_IN
+    unsigned char au8iv[16] = {0};
+    memcpy((void *)au8iv, (const void *)add_iv, 16);
+    
     mbedtls_aes_context aes_ctx;
     mbedtls_aes_init(&aes_ctx);
-    mbedtls_aes_setkey_dec(&aes_ctx, add_key, key_size_in_bytes*8); // Ex: 16 byte = 128 bit
-    mbedtls_aes_crypt_cbc(&aes_ctx, MBEDTLS_AES_DECRYPT, tr_size_in_bytes, add_iv, add_src, add_dest);
+    mbedtls_aes_setkey_dec(&aes_ctx,
+                           (const unsigned char *)add_key,
+                           (unsigned int)(key_size_in_bytes*8)); // Ex: 16 byte = 128 bit
+    mbedtls_aes_crypt_cbc(&aes_ctx,
+                          MBEDTLS_AES_DECRYPT,
+                          (size_t)tr_size_in_bytes,
+                          au8iv,
+                          (const unsigned char *)add_src,
+                          (unsigned char *)add_dest);
     mbedtls_aes_free(&aes_ctx);
     _SEC_TRACE_OUT
     return 0;
@@ -206,8 +255,17 @@ int sec_aes_ctr_enc(int key_size_in_bytes,
     symmetric_CTR ctr;
     register_cipher(&aes_desc);
     idx = find_cipher("aes");
-    ctr_start(idx, add_iv, add_key, key_size_in_bytes, 0, CTR_COUNTER_BIG_ENDIAN, &ctr);
-    ctr_encrypt(add_src, add_dest, tr_size_in_bytes, &ctr);
+    ctr_start(idx,
+              (const unsigned char *)add_iv,
+              (const unsigned char *)add_key,
+              key_size_in_bytes,
+              0,
+              CTR_COUNTER_BIG_ENDIAN,
+              &ctr);
+    ctr_encrypt((const unsigned char *)add_src,
+                (unsigned char *)add_dest,
+                (long unsigned int)tr_size_in_bytes,
+                &ctr);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -224,8 +282,17 @@ int sec_aes_ctr_dec(int key_size_in_bytes,
     symmetric_CTR ctr;
     register_cipher(&aes_desc);
     idx = find_cipher("aes");
-    ctr_start(idx, add_iv, add_key, key_size_in_bytes, 0, CTR_COUNTER_BIG_ENDIAN, &ctr);
-    ctr_decrypt(add_src, add_dest, tr_size_in_bytes, &ctr);
+    ctr_start(idx,
+              (const unsigned char *)add_iv,
+              (const unsigned char *)add_key,
+              key_size_in_bytes,
+              0,
+              CTR_COUNTER_BIG_ENDIAN,
+              &ctr);
+    ctr_decrypt((const unsigned char *)add_src,
+                (unsigned char *)add_dest,
+                (long unsigned int)tr_size_in_bytes,
+                &ctr);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -238,7 +305,13 @@ int sec_aes_cmac(int key_size_in_bytes,
                  int tr_size_in_bytes)
 {
     _SEC_TRACE_IN
-    mbedtls_aes_cmac_prf_128(add_key, key_size_in_bytes, add_src, tr_size_in_bytes, add_dest);
+    unsigned char au8CmacRes[16] = {0};
+    mbedtls_aes_cmac_prf_128((const unsigned char *)add_key,
+                             (size_t)key_size_in_bytes,
+                             (const unsigned char *)add_src,
+                             (size_t)tr_size_in_bytes,
+                             au8CmacRes);
+    memcpy((void *)add_dest, (const void *)au8CmacRes, 16);
     _SEC_TRACE_OUT
     return 0;
 }
@@ -292,42 +365,42 @@ void sec_GenRsaKey_impl(char* n, char* p, char* q, char* dP, char* dQ, char* qIn
     // gen RSA key
     ret = mbedtls_rsa_gen_key(&ctx, mbedtls_ctr_drbg_random, // random
                                         &ctr_drbg, // random struct
-                                        size_n_bits, // n key size module lens (2048)
+                                        (unsigned int)size_n_bits, // n key size module lens (2048)
                                         e_value); // e key 0x10001
     assert_exit(ret == 0, ret);
     mbedtls_printf("\n  1. RSA generate key ... ok\n");
 
     uint8_t buf[516];
     mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
-    mbedtls_mpi_write_string(&ctx.N , 16, buf, sizeof(buf), &olen);
-    mbedtls_mpi_write_binary(&ctx.N , (unsigned char * )n, size_n_bits/8);
+    mbedtls_mpi_write_string(&ctx.N , 16, (char *)buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_binary(&ctx.N , (unsigned char * )n, (size_t)(size_n_bits/8));
     mbedtls_printf("N: %s\n", buf);
 
-    mbedtls_mpi_write_string(&ctx.E , 16, buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_string(&ctx.E , 16, (char *)buf, sizeof(buf), &olen);
     mbedtls_printf("E: %s\n", buf);
 
-    mbedtls_mpi_write_string(&ctx.D , 16, buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_string(&ctx.D , 16, (char *)buf, sizeof(buf), &olen);
     mbedtls_printf("D: %s\n", buf);
 
-    mbedtls_mpi_write_string(&ctx.P , 16, buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_string(&ctx.P , 16, (char *)buf, sizeof(buf), &olen);
     mbedtls_printf("P: %s\n", buf);
-    mbedtls_mpi_write_binary(&ctx.P , (unsigned char * )p, size_n_bits/8/2);
+    mbedtls_mpi_write_binary(&ctx.P , (unsigned char * )p, (size_t)(size_n_bits/8/2));
 
-    mbedtls_mpi_write_string(&ctx.Q , 16, buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_string(&ctx.Q , 16, (char *)buf, sizeof(buf), &olen);
     mbedtls_printf("Q: %s\n", buf);
-    mbedtls_mpi_write_binary(&ctx.Q , (unsigned char * )q, size_n_bits/8/2);
+    mbedtls_mpi_write_binary(&ctx.Q , (unsigned char * )q, (size_t)(size_n_bits/8/2));
 
-    mbedtls_mpi_write_string(&ctx.DP, 16, buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_string(&ctx.DP, 16, (char *)buf, sizeof(buf), &olen);
     mbedtls_printf("DP: %s\n", buf);
-    mbedtls_mpi_write_binary(&ctx.DP , (unsigned char * )dP, size_n_bits/8/2);
+    mbedtls_mpi_write_binary(&ctx.DP , (unsigned char * )dP, (size_t)(size_n_bits/8/2));
 
-    mbedtls_mpi_write_string(&ctx.DQ, 16, buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_string(&ctx.DQ, 16, (char *)buf, sizeof(buf), &olen);
     mbedtls_printf("DQ: %s\n", buf);
-    mbedtls_mpi_write_binary(&ctx.DQ , (unsigned char * )dQ, size_n_bits/8/2);
+    mbedtls_mpi_write_binary(&ctx.DQ , (unsigned char * )dQ, (size_t)(size_n_bits/8/2));
 
-    mbedtls_mpi_write_string(&ctx.QP, 16, buf, sizeof(buf), &olen);
+    mbedtls_mpi_write_string(&ctx.QP, 16, (char *)buf, sizeof(buf), &olen);
     mbedtls_printf("QP(qInv): %s\n", buf);
-    mbedtls_mpi_write_binary(&ctx.QP , (unsigned char * )qInv, size_n_bits/8/2);
+    mbedtls_mpi_write_binary(&ctx.QP , (unsigned char * )qInv, (size_t)(size_n_bits/8/2));
 
     mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
 
@@ -339,3 +412,35 @@ cleanup:
     return;
 }
 
+
+int sec_rsa_verify(char* n,
+                   char* exp,
+                   int size_n_in_words,
+                   int size_e_in_words,
+                   int hash_type,
+                   char *add_message,
+                   int message_size_in_words,
+                   char *add_signature,
+                   int signature_size_in_words)
+{
+    _SEC_TRACE_IN
+    // [TODO]
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_rsa_sign(char* n,
+                 char* exp,
+                 int size_n_in_words,
+                 int size_e_in_words,
+                 int hash_type,
+                 char *add_message,
+                 int message_size_in_words,
+                 char *add_signature,
+                 int signature_size_in_words)
+{
+    _SEC_TRACE_IN
+    // [TODO]
+    _SEC_TRACE_OUT
+    return 0;
+}

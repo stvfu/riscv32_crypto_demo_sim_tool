@@ -576,7 +576,7 @@ void __test_suite__(void)
         // char input
         while(1)
         {
-            u8CharInput = getchar();
+            u8CharInput = (char)getchar();
             //printf("u8CharInput = 0x%x\n", u8CharInput);
 
             if((u8CharInput >= 0x30)&&(u8CharInput <= 0x39)) // 0~9
@@ -605,7 +605,7 @@ void __test_suite__(void)
                 }
             }
 
-            if((u8CharInput == 0x8)&&(u8CharInput == 0x7f)) // backspace, Delete
+            if((u8CharInput == 0x8) || (u8CharInput == 0x7f)) // backspace, Delete
             {
                 if(s32CharNumber > 0)
                 {
