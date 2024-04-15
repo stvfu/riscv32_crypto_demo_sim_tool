@@ -13,7 +13,7 @@
 rot_error_t rot_trng_generate_random_buffer(uint32_t * datas, uint32_t unmber_of_words)
 {
     _ROT_TRACE_IN
-    sec_generate_random_buffer((char*) datas, (int)unmber_of_words)
+    sec_generate_random_buffer((char*) datas, (int)unmber_of_words);
     _ROT_TRACE_OUT
     return 0;
 }
