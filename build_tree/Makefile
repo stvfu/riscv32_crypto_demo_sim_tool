@@ -10,9 +10,15 @@ CC=$(TOOLCHAIN_PREFIX)-gcc
 LD=$(TOOLCHAIN_PREFIX)-ld
 AR=$(TOOLCHAIN_PREFIX)-ar
 
+# base test app setting
 TARGET     = MyLib
 TARGET_LIB = lib$(TARGET).a
 BIN        = demo
+
+# dev template: user app setting
+USER_APP        = user_app
+USER_APP_PATH   = ./user_app
+RELEASE_PACKAGE = ./release_package
 
 OUTPUT_PATH=./out
 INCDIR += -I./inc
@@ -81,13 +87,25 @@ LIBS += -lmbedcrypto -lmbedtls -lmbedx509
 OBJS := $(SRCS:.c=.o)
 SUS := $(SRCS:.c=.su)
 
-all: $(BIN) $(TARGET)
+all: $(BIN) $(TARGET) $(USER_APP)
+
+$(USER_APP): $(TARGET)
+	@echo "  Build User Source :"
+	cd $(USER_APP_PATH) && $(CC) $(CFLAGS) -I./ -I../rot_wrapper -c user_app.c && cd ..
+	@echo "  Gen User Lib :"
+	$(Q)$(AR) -rcs user_app/lib$(USER_APP).a $(USER_APP_PATH)/user_app.o
+	$(Q)cp $(USER_APP_PATH)/lib$(USER_APP).a ./out/lib$(USER_APP).a
+	@echo "  Build User Source :"
+	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ $(USER_APP_PATH)/main.c -I$(USER_APP_PATH) $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(USER_APP) -l$(TARGET) $(LIBS)
+	mkdir -p $(RELEASE_PACKAGE)
+	cp -r ./out/lib$(USER_APP).a $(RELEASE_PACKAGE)/lib$(USER_APP).a
+	cp -r $(USER_APP_PATH)/user_app.h  $(RELEASE_PACKAGE)/user_app.h
 
 $(BIN): $(TARGET)
 	@echo "  Build $(BIN) :"
 	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET)  $(LIBS)
 	@echo "  Build $(BIN)_suite :"
-	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@_suite test/test_app.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET)  $(LIBS)
+	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@_suite test/test_app.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET) $(LIBS)
 
 $(TARGET): $(OBJS)
 	@echo "   object (.o) --> library(.a)"
@@ -105,4 +123,7 @@ clean:
 	$(Q)rm -rf $(OBJS)
 	$(Q)rm -rf $(SUS)
 	$(Q)rm -rf $(OUTPUT_PATH)
-
+	$(Q)rm -rf $(RELEASE_PACKAGE)
+	$(Q)rm -rf $(USER_APP_PATH)/*.o
+	$(Q)rm -rf $(USER_APP_PATH)/*.su
+	$(Q)rm -rf $(USER_APP_PATH)/*.a
