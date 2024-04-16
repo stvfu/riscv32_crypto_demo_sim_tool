@@ -40,6 +40,8 @@ static void test_rsa_verify(void);
 static void test_ecc_genkey(void);
 static void test_ecdsa_sign(void);
 static void test_ecdsa_verify(void);
+static void test_ecdsa_test(void);
+static void test_ecdh_test(void);
 
 static MENU MENU_TABLE[] = {
     // common
@@ -75,6 +77,8 @@ static MENU MENU_TABLE[] = {
     { "test rsa sign",                       &test_rsa_sign},
 
     // ecc
+    { "test ecdsa test",                     &test_ecdsa_test},
+    { "test ecdh test",                      &test_ecdh_test},
     { "test ecc gen key",                    &test_ecc_genkey},
     { "test ecdsa verify",                   &test_ecdsa_verify},
     { "test ecdsa sign",                     &test_ecdsa_sign},
@@ -562,6 +566,20 @@ static void test_rsa_verify(void)
 ////////////////////////////////////////////////////////////////////////
 // ECC related API
 ////////////////////////////////////////////////////////////////////////
+static void test_ecdsa_test(void)
+{
+    _TEST_SUITE_TRACE_IN
+    sec_ecdsa_test();
+    _TEST_SUITE_TRACE_OUT
+}
+
+static void test_ecdh_test(void)
+{
+    _TEST_SUITE_TRACE_IN
+    sec_ecdh_test();
+    _TEST_SUITE_TRACE_OUT
+}
+
 static void test_ecc_genkey(void)
 {
    //[TODO]

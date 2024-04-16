@@ -32,3 +32,5 @@ int sec_rsa_generate_key(char* n, char* p, char* q, char* dP, char* dQ, char* qI
 int sec_rsa_verify(char* n, char* exp, int size_n_in_words, int size_e_in_words, int hash_type, char *add_message, int message_size_in_words, char *add_signature, int signature_size_in_words);
 
 // ECC
+int sec_ecdsa_test(void);
+int sec_ecdh_test(void);

@@ -8,6 +8,8 @@
 #include <libtom_test.h>
 #include <mbedtls_test.h>
 
+#include "mbedtls/ecdsa.h"
+#include "mbedtls/ecdh.h"
 #include "mbedtls/rsa.h"
 #include "mbedtls/cmac.h"
 #include "mbedtls/entropy.h"
@@ -491,5 +493,211 @@ int sec_rsa_sign(char* p,
     _SEC_TRACE_IN
     //[TODO]
     _SEC_TRACE_OUT
+    return 0;
+}
+
+static void dump_buf(char *info, uint8_t *buf, uint32_t len)
+{
+    mbedtls_printf("%s", info);
+    for (int i = 0; i < (int)len; i++) {
+        mbedtls_printf("%s%02X%s", i % 16 == 0 ? "\n     ":" ",
+                        buf[i], i == (int)len - 1 ? "\n":"");
+    }
+}
+
+int sec_ecdsa_test(void)
+{
+    int ret = 0;
+    char buf[97];
+    uint8_t hash[32], msg[100];
+    const char *pers = "simple_ecdsa";
+
+    size_t rlen, slen, qlen, dlen;
+    memset(msg, 0x12, sizeof(msg));
+
+    //mbedtls_platform_set_printf(printf);
+
+    mbedtls_mpi r, s;
+    mbedtls_ecdsa_context ctx;
+    mbedtls_md_context_t md_ctx;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    mbedtls_mpi_init(&r);
+    mbedtls_mpi_init(&s);
+    mbedtls_ecdsa_init(&ctx);  // Initialize the ECDSA structure
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    /*
+    mbedtls_entropy_add_source(&entropy, entropy_source, NULL,
+                   MBEDTLS_ENTROPY_MAX_GATHER, MBEDTLS_ENTROPY_SOURCE_STRONG);*/
+    ret = mbedtls_ctr_drbg_seed(&ctr_drbg,
+                                sw_entropy, &entropy,
+                                (const uint8_t *)pers,
+                                strlen(pers));
+
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("\n  . setup rng ... ok\n\n");
+
+    mbedtls_md_init(&md_ctx);
+    mbedtls_md(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), msg, sizeof(msg), hash);
+    mbedtls_printf("  1. hash msg ... ok\n"); //calculate the hash value of msg
+
+    //generate ECDSA key pair
+    ret = mbedtls_ecdsa_genkey(&ctx,
+                               MBEDTLS_ECP_DP_SECP256R1, //select SECP256R1
+                               mbedtls_ctr_drbg_random,
+                               &ctr_drbg);
+
+    assert_exit(ret == 0, ret);
+    mbedtls_ecp_point_write_binary(&ctx.grp,
+                                   &ctx.Q,
+                                   MBEDTLS_ECP_PF_UNCOMPRESSED,
+                                   &qlen,
+                                   (unsigned char *)buf,
+                                   sizeof(buf));
+
+    dlen = mbedtls_mpi_size(&ctx.d);
+    mbedtls_mpi_write_binary(&ctx.d, (unsigned char *)(buf + qlen), dlen);
+    mbedtls_printf("  2. ecdsa generate keypair:\n");
+    _DUMP_((int)(qlen + dlen), (char *)buf);
+
+    //ECDSA signature, get r, s
+    ret = mbedtls_ecdsa_sign(&ctx.grp,
+                             &r,
+                             &s,
+                             &ctx.d,
+                             hash,
+                             sizeof(hash),
+                             mbedtls_ctr_drbg_random,
+                             &ctr_drbg);
+
+    assert_exit(ret == 0, ret);
+    rlen = mbedtls_mpi_size(&r);
+    slen = mbedtls_mpi_size(&s);
+    mbedtls_mpi_write_binary(&r, (unsigned char *)buf, rlen);
+    mbedtls_mpi_write_binary(&s, (unsigned char *)(buf + rlen), slen);
+
+    mbedtls_printf("  3. ecdsa generate signature:\n");
+    _DUMP_((int)(rlen + slen), (char *)buf);
+
+    //ECDSA verify
+    ret = mbedtls_ecdsa_verify(&ctx.grp, hash, sizeof(hash), &ctx.Q, &r, &s);
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("  4. ecdsa verify signature ... ok\n\n");
+
+cleanup:
+    mbedtls_mpi_free(&r);
+    mbedtls_mpi_free(&s);
+    mbedtls_md_free(&md_ctx);
+    mbedtls_ecdsa_free(&ctx);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_entropy_free(&entropy);
+
+    return(ret != 0);
+}
+
+int sec_ecdh_test(void)
+{
+    int ret = 0;
+    size_t olen;
+    char buf[65];
+    mbedtls_ecp_group grp;
+    mbedtls_mpi cli_secret, srv_secret;
+    mbedtls_mpi cli_pri, srv_pri;
+    mbedtls_ecp_point cli_pub, srv_pub;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+    const char *pers = "simple_ecdh";
+
+    mbedtls_mpi_init(&cli_pri); //
+    mbedtls_mpi_init(&srv_pri);
+    mbedtls_mpi_init(&cli_secret);
+    mbedtls_mpi_init(&srv_secret);
+    mbedtls_ecp_group_init(&grp);     // init ecp struct
+    mbedtls_ecp_point_init(&cli_pub); //init ecp point cli
+    mbedtls_ecp_point_init(&srv_pub); //init ecp point srv
+    mbedtls_entropy_init(&entropy);   // init entropy struct
+    mbedtls_ctr_drbg_init(&ctr_drbg); // init random struct
+/*
+    mbedtls_entropy_add_source(&entropy, entropy_source, NULL,
+                       MBEDTLS_ENTROPY_MAX_GATHER, MBEDTLS_ENTROPY_SOURCE_STRONG);*/
+
+    mbedtls_ctr_drbg_seed(&ctr_drbg, sw_entropy, &entropy,
+                                (const uint8_t *)pers, strlen((const char *)pers));
+    mbedtls_printf("\n  . setup rng ... ok\n");
+
+    // load elliptic curve and select SECP256R1
+    ret = mbedtls_ecp_group_load(&grp, MBEDTLS_ECP_DP_SECP256R1);
+    mbedtls_printf("\n  . select ecp group SECP256R1 ... ok\n");
+
+    // cli generates public parameters
+    ret = mbedtls_ecdh_gen_public(&grp,    // elliptic curve structure
+                                  &cli_pri,// output cli private parameter d
+                                  &cli_pub,// output cli public parameter Q
+                                  mbedtls_ctr_drbg_random, &ctr_drbg);
+    assert_exit(ret == 0, ret);
+    mbedtls_ecp_point_write_binary(&grp,
+                                   &cli_pub, // put the public parameters of cli into buf
+                                   MBEDTLS_ECP_PF_UNCOMPRESSED,
+                                   &olen,
+                                   (unsigned char *)buf,
+                                   sizeof(buf));
+    mbedtls_printf("  1. ecdh client generate public parameter:\n");
+    _DUMP_((int)olen, (char *)buf);
+    //srv generates public parameters
+    ret = mbedtls_ecdh_gen_public(&grp,     // elliptic curve structure
+                                  &srv_pri, // output srv private parameter d
+                                  &srv_pub, // output srv public parameter Q
+                                  mbedtls_ctr_drbg_random, &ctr_drbg);
+    assert_exit(ret == 0, ret);
+    mbedtls_ecp_point_write_binary(&grp, &srv_pub, // export the public parameters of srv to buf
+                            MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, (unsigned char *)buf, sizeof(buf));
+
+    mbedtls_printf("  2. ecdh server generate public parameter:\n");
+    _DUMP_((int)olen, (char *)buf);
+
+    // cli calculates shared secret
+    ret = mbedtls_ecdh_compute_shared(&grp,        // elliptic curve structure
+                                      &cli_secret, // shared secret calculated by cli
+                                      &srv_pub,    // enter srv public parameter Q
+                                      &cli_pri,    // enter the private parameter d of the cli itself
+                                      mbedtls_ctr_drbg_random, &ctr_drbg);
+    assert_exit(ret == 0, ret);
+
+    // export the shared key calculated by cli into buf
+    mbedtls_mpi_write_binary(&cli_secret, (unsigned char *)buf, mbedtls_mpi_size(&cli_secret));
+    mbedtls_printf("  3. ecdh client generate secret:\n");
+    _DUMP_((int)mbedtls_mpi_size(&cli_secret), (char *)buf);
+
+    // srv calculates shared secret
+    ret = mbedtls_ecdh_compute_shared(&grp,   // elliptic curve structure
+                                      &srv_secret, // the shared secret calculated by srv
+                                      &cli_pub, // enter cli public parameter Q
+                                      &srv_pri, // enter the private parameter d of srv itself
+                                      mbedtls_ctr_drbg_random, &ctr_drbg);
+    assert_exit(ret == 0, ret);
+    // Export the shared key calculated by srv into buf
+    mbedtls_mpi_write_binary(&srv_secret, (unsigned char *)buf, mbedtls_mpi_size(&srv_secret));
+
+    mbedtls_printf("  4. ecdh server generate secret:\n");
+    _DUMP_((int)mbedtls_mpi_size(&srv_secret), (char *)buf);
+
+    // compare 2 value for res
+    ret = mbedtls_mpi_cmp_mpi(&cli_secret, &srv_secret);
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("  5. ecdh checking secrets ... ok\n");
+
+cleanup:
+    mbedtls_mpi_free(&cli_pri);
+    mbedtls_mpi_free(&srv_pri);
+    mbedtls_mpi_free(&cli_secret);
+    mbedtls_mpi_free(&srv_secret);
+    mbedtls_ecp_group_free(&grp);
+    mbedtls_ecp_point_free(&cli_pub);
+    mbedtls_ecp_point_free(&srv_pub);
+    mbedtls_entropy_free(&entropy);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+
     return 0;
 }
