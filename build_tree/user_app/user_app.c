@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <user_app.h>
-#include <rot_wrapper.h>
+#include <customization_wrapper.h>
 
 void user_app_execute(uint32_t u32Address, uint32_t u32Size)
 {
@@ -18,13 +18,13 @@ void user_app_execute(uint32_t u32Address, uint32_t u32Size)
     switch(u32UsetCmd)    // switch case
     {
         case USER_CMD_HASH_SHA256:
-            rot_hash_sha256((uint32_t*)u32InputBuffer, 
+            customization_hash_sha256((uint32_t*)u32InputBuffer, 
                             (uint32_t*)u32OutputBuffer, 
                             u32InputSize);
             break;
     
         case USER_CMD_HASH_SHA384:
-            rot_hash_sha384((uint32_t*)u32InputBuffer, 
+            customization_hash_sha384((uint32_t*)u32InputBuffer, 
                             (uint32_t*)u32OutputBuffer, 
                             u32InputSize);
             break;

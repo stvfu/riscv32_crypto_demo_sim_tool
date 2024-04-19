@@ -24,7 +24,7 @@ OUTPUT_PATH=./out
 INCDIR += -I./inc
 INCDIR += -I./inc/libtom
 INCDIR += -I./inc/mbedtls
-INCDIR += -I./rot_wrapper
+INCDIR += -I./customer_api_wrapper
 
 # mbedtsl macro
 CFLAGS+= -DMBEDTLS_ALLOW_PRIVATE_ACCESS
@@ -78,7 +78,7 @@ LDLIBS += -L./lib/mbedtls/$(TOOLCHAIN_PREFIX)
 #source
 SRCS += $(wildcard src/*.c)
 SRCS += $(wildcard src/sec_api/*.c)
-SRCS += $(wildcard rot_wrapper/*.c)
+SRCS += $(wildcard customer_api_wrapper/*.c)
 
 LIBS += -ltomcrypt
 LIBS += -lmbedcrypto -lmbedtls -lmbedx509
@@ -91,7 +91,7 @@ all: $(BIN) $(TARGET) $(USER_APP)
 
 $(USER_APP): $(TARGET)
 	@echo "  Build User Source :"
-	cd $(USER_APP_PATH) && $(CC) $(CFLAGS) -I./ -I../rot_wrapper -c user_app.c && cd ..
+	cd $(USER_APP_PATH) && $(CC) $(CFLAGS) -I./ -I../customer_api_wrapper -c user_app.c && cd ..
 	@echo "  Gen User Lib :"
 	$(Q)$(AR) -rcs user_app/lib$(USER_APP).a $(USER_APP_PATH)/user_app.o
 	$(Q)cp $(USER_APP_PATH)/lib$(USER_APP).a ./out/lib$(USER_APP).a
