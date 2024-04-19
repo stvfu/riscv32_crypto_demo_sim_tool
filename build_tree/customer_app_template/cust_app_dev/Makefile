@@ -10,21 +10,24 @@ CC=$(TOOLCHAIN_PREFIX)-gcc
 LD=$(TOOLCHAIN_PREFIX)-ld
 AR=$(TOOLCHAIN_PREFIX)-ar
 
+# service name
+SERVICE = custapp
+
 # base test app setting
-TARGET     = MyLib
-TARGET_LIB = lib$(TARGET).a
 BIN        = demo
 
-# dev template: user app setting
-USER_APP        = user_app
-USER_APP_PATH   = ./user_app
+# release
 RELEASE_PACKAGE = ./release_package
 
 OUTPUT_PATH=./out
 INCDIR += -I./inc
 INCDIR += -I./inc/libtom
 INCDIR += -I./inc/mbedtls
-INCDIR += -I./customer_api_wrapper
+INCDIR += -I./inc/sec_api
+
+# MODULE_INDIR setting in ./module/module.mk
+include ./module/module.mk
+INCDIR += $(MODULE_INCDIR)
 
 # mbedtsl macro
 CFLAGS+= -DMBEDTLS_ALLOW_PRIVATE_ACCESS
@@ -74,43 +77,64 @@ LDFLAGS +=
 
 LDLIBS += -L./lib/libtom/$(TOOLCHAIN_PREFIX)
 LDLIBS += -L./lib/mbedtls/$(TOOLCHAIN_PREFIX)
+LDLIBS += -L./lib/sec_api
 
 #source
 SRCS += $(wildcard src/*.c)
-SRCS += $(wildcard src/sec_api/*.c)
-SRCS += $(wildcard customer_api_wrapper/*.c)
+# MODULE_INDIR setting in ./module/module.mk
+SRCS += $(MODULE_SRCS)
 
+# Library linker setting
+# test app -> call service entry
+# MOULDE_TEST_LIBS setting in ./module/module.mk
+LIBS += $(MOULDE_TEST_LIBS)
+
+# service entry -> call module implement function
+LIBS += -l$(SERVICE)_entry
+
+# module implement function -> call sw function
+# MOULDE_LIBS setting in ./module/module.mk
+LIBS += $(MOULDE_LIBS)
+
+# sw function -> call opensource function
+LIBS += -lMyLib
+
+#  opensource function
 LIBS += -ltomcrypt
 LIBS += -lmbedcrypto -lmbedtls -lmbedx509
+
+# parse module list
+MODULE_LIST := $(patsubst module/module_%,%,$(wildcard module/module_*))
 
 # object
 OBJS := $(SRCS:.c=.o)
 SUS := $(SRCS:.c=.su)
 
-all: $(BIN) $(TARGET) $(USER_APP)
+all: $(BIN) gen_lib release
 
-$(USER_APP): $(TARGET)
-	@echo "  Build User Source :"
-	cd $(USER_APP_PATH) && $(CC) $(CFLAGS) -I./ -I../customer_api_wrapper -c user_app.c && cd ..
-	@echo "  Gen User Lib :"
-	$(Q)$(AR) -rcs user_app/lib$(USER_APP).a $(USER_APP_PATH)/user_app.o
-	$(Q)cp $(USER_APP_PATH)/lib$(USER_APP).a ./out/lib$(USER_APP).a
-	@echo "  Build User Source :"
-	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ $(USER_APP_PATH)/main.c -I$(USER_APP_PATH) $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(USER_APP) -l$(TARGET) $(LIBS)
-	mkdir -p $(RELEASE_PACKAGE)
-	cp -r ./out/lib$(USER_APP).a $(RELEASE_PACKAGE)/lib$(USER_APP).a
-	cp -r $(USER_APP_PATH)/user_app.h  $(RELEASE_PACKAGE)/user_app.h
+release: gen_lib
+	$(Q)rm -rf $(RELEASE_PACKAGE)
+	$(Q)mkdir -p $(RELEASE_PACKAGE)
+	$(Q)cp -r $(OUTPUT_PATH)/lib$(SERVICE)_entry.a $(RELEASE_PACKAGE)/
+	$(Q)cp -r $(OUTPUT_PATH)/lib$(SERVICE)_module_*.a $(RELEASE_PACKAGE)/
+	$(Q)rm -rf $(RELEASE_PACKAGE)/*test.a
 
-$(BIN): $(TARGET)
+	$(Q)cp -r ./inc/$(SERVICE).h $(RELEASE_PACKAGE)/
+	$(Q)cp -r ./module/*/*.h $(RELEASE_PACKAGE)/
+
+$(BIN): gen_lib $(MODULE_LIST)
 	@echo "  Build $(BIN) :"
-	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET)  $(LIBS)
-	@echo "  Build $(BIN)_suite :"
-	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@_suite test/test_app.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET) $(LIBS)
+	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) $(LIBS)
 
-$(TARGET): $(OBJS)
+$(MODULE_LIST): gen_lib
+	@echo "   gen module_$@ library"
+	$(Q)$(AR) -rcs $(OUTPUT_PATH)/lib$(SERVICE)_module_$@.a      ./module/module_$@/$(SERVICE)_module_$@_entry.o
+	$(Q)$(AR) -rcs $(OUTPUT_PATH)/lib$(SERVICE)_module_$@_test.a ./module/module_$@/$(SERVICE)_module_$@_test.o
+      
+gen_lib: $(OBJS)
 	@echo "   object (.o) --> library(.a)"
 	$(Q)mkdir $(OUTPUT_PATH)
-	$(Q)$(AR) -rcs $(OUTPUT_PATH)/$(TARGET_LIB) $(OBJS) ./customer_api_wrapper/customization_wrapper.o
+	$(Q)$(AR) -rcs $(OUTPUT_PATH)/lib$(SERVICE)_entry.a ./src/$(SERVICE)_entry.o
 	@echo "   library complier option:"
 	@echo "   CFLAGS = $(CFLAGS)"
 
@@ -124,6 +148,3 @@ clean:
 	$(Q)rm -rf $(SUS)
 	$(Q)rm -rf $(OUTPUT_PATH)
 	$(Q)rm -rf $(RELEASE_PACKAGE)
-	$(Q)rm -rf $(USER_APP_PATH)/*.o
-	$(Q)rm -rf $(USER_APP_PATH)/*.su
-	$(Q)rm -rf $(USER_APP_PATH)/*.a
