@@ -77,9 +77,9 @@ static MENU MENU_TABLE[] = {
     { "test rsa sign",                       &test_rsa_sign},
 
     // ecc
+    { "test ecc gen key",                    &test_ecc_genkey},
     { "test ecdsa test",                     &test_ecdsa_test},
     { "test ecdh test",                      &test_ecdh_test},
-    { "test ecc gen key",                    &test_ecc_genkey},
     { "test ecdsa verify",                   &test_ecdsa_verify},
     { "test ecdsa sign",                     &test_ecdsa_sign},
 
@@ -582,8 +582,22 @@ static void test_ecdh_test(void)
 
 static void test_ecc_genkey(void)
 {
-   //[TODO]
-   printf("[TODO]\n");
+    _TEST_SUITE_TRACE_IN
+      
+
+    char d[256]={0};
+    char q_x[256]={0};
+    char q_y[256]={0};
+
+    sec_ecc_generate_key(d, q_x, q_y);
+
+    printf("\n Private Key: d\n");
+    _DUMP(32, d);
+    printf("\n Public Key: Q_X\n");
+    _DUMP(32,   q_x);
+    printf("\n Public Key: Q_Y\n");
+    _DUMP(32, q_y);
+    _TEST_SUITE_TRACE_OUT
 }
 
 static void test_ecdsa_sign(void)

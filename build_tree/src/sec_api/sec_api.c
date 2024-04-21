@@ -505,6 +505,85 @@ static void dump_buf(char *info, uint8_t *buf, uint32_t len)
     }
 }
 
+int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+{
+    int ret = 0;
+    char buf[97];
+    uint8_t hash[32], msg[100];
+    const char *pers = "simple_ecdsa";
+
+    char tempbuf[256];
+    int templen = 0;
+    size_t dlen, qlen;
+    size_t q_xlen;
+    size_t q_ylen;
+    memset(msg, 0x12, sizeof(msg));
+
+    //mbedtls_platform_set_printf(printf);
+
+    mbedtls_ecdsa_context ctx;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    mbedtls_ecdsa_init(&ctx);  // Initialize the ECDSA structure
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    /*
+    mbedtls_entropy_add_source(&entropy, entropy_source, NULL,
+                   MBEDTLS_ENTROPY_MAX_GATHER, MBEDTLS_ENTROPY_SOURCE_STRONG);*/
+    ret = mbedtls_ctr_drbg_seed(&ctr_drbg,
+                                sw_entropy, &entropy,
+                                (const uint8_t *)pers,
+                                strlen(pers));
+
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("\n  . setup rng ... ok\n\n");
+
+    //generate ECDSA key pair
+    ret = mbedtls_ecdsa_genkey(&ctx,
+                               MBEDTLS_ECP_DP_SECP256R1, //select SECP256R1
+                               mbedtls_ctr_drbg_random,
+                               &ctr_drbg);
+
+    assert_exit(ret == 0, ret);
+    mbedtls_ecp_point_write_binary(&ctx.grp,
+                                   &ctx.Q,
+                                   MBEDTLS_ECP_PF_UNCOMPRESSED,
+                                   &qlen,
+                                   (unsigned char *)buf,
+                                   sizeof(buf));
+
+    dlen = mbedtls_mpi_size(&ctx.d);
+    q_xlen = mbedtls_mpi_size(&ctx.Q.X);
+    q_ylen = mbedtls_mpi_size(&ctx.Q.Y);
+
+    mbedtls_mpi_write_string(&ctx.d, 16, (char *)tempbuf, sizeof(tempbuf), (size_t *)&templen);
+    mbedtls_printf("ecdsa private   d: %s\n", tempbuf);
+    memset((void *)tempbuf, 256, 0);
+    mbedtls_mpi_write_binary(&ctx.d , (unsigned char *)private_d, (size_t)dlen);
+    //_DUMP_((int)(dlen), (char *)tempbuf);
+
+    mbedtls_mpi_write_string(&ctx.Q.X, 16, (char *)tempbuf, sizeof(tempbuf), (size_t *)&templen);
+    mbedtls_printf("ecdsa public  Q_X: %s\n", tempbuf);
+    memset((void *)tempbuf, 256, 0);
+    mbedtls_mpi_write_binary(&ctx.Q.X , (unsigned char *)public_Q_X, (size_t)q_xlen);
+    //_DUMP_((int)(q_xlen), (char *)tempbuf);
+
+    mbedtls_mpi_write_string(&ctx.Q.Y, 16, (char *)tempbuf, sizeof(tempbuf), (size_t *)&templen);
+    mbedtls_printf("ecdsa public  Q_Y: %s\n", tempbuf);
+    memset((void *)tempbuf, 256, 0);
+    mbedtls_mpi_write_binary(&ctx.Q.Y , (unsigned char *)public_Q_Y, (size_t)q_ylen);
+    //_DUMP_((int)(q_ylen), (char *)tempbuf);
+
+cleanup:
+    mbedtls_ecdsa_free(&ctx);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_entropy_free(&entropy);
+
+    return(ret != 0);
+}
+
+
 int sec_ecdsa_test(void)
 {
     int ret = 0;
