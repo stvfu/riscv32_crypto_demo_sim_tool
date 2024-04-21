@@ -126,3 +126,5 @@ cd $SEARCH_DIR/customer_app_template/cust_app_dev/module && ./copy_sample_to_new
 mv $SEARCH_DIR/customer_app_template/cust_app_dev $SEARCH_DIR/customer_app_template/${APP_PRIFIX}_app_dev
 sed -i "s/cust_/${APP_PRIFIX}_/g" $SEARCH_DIR/build_and_test.sh
 sed -i "s/cust_/${APP_PRIFIX}_/g" $SEARCH_DIR/Makefile
+
+cd $SEARCH_DIR && ./build_and_test.sh
