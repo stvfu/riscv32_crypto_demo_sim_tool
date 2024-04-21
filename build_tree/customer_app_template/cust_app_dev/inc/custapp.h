@@ -1,11 +1,11 @@
 typedef struct{
     uint32_t u32Module;
-    uint32_t u32HpseCmd;
+    uint32_t u32CustappCmd;
     uint32_t u32InputBuffer;
     uint32_t u32InputSize;
     uint32_t u32OutputBuffer;
     uint32_t u32OutputSize;
-} ST_HpseReqData;
+} ST_CustappReqData;
 
 typedef enum{
     CUSTAPP_MODULE_SAMPLE,

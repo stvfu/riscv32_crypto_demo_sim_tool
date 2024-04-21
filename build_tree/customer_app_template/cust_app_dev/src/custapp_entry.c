@@ -10,11 +10,11 @@
 
 void custapp_execute(uint32_t u32Address, uint32_t u32Size)
 {
-    ST_HpseReqData stHpseReqData;
-    memcpy((void *)&stHpseReqData, (const void *)u32Address, (size_t)u32Size);
+    ST_CustappReqData stCustappReqData;
+    memcpy((void *)&stCustappReqData, (const void *)u32Address, (size_t)u32Size);
 
   // parser module ID
-    E_Custapp_Module eModule = (E_Custapp_Module)stHpseReqData.u32Module;
+    E_Custapp_Module eModule = (E_Custapp_Module)stCustappReqData.u32Module;
     switch(eModule)
     {
         case CUSTAPP_MODULE_SAMPLE:

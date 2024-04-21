@@ -3,7 +3,7 @@
 # path
 SEARCH_DIR=$(pwd)
 
-OLD_TAG="hpse"
+OLD_TAG="custapp"
 # Check if NEW_TAG is provided as an argument
 if [ -z "$1" ]; then
     echo "Usage: $0 new_name_prefix"
@@ -12,13 +12,13 @@ fi
 NEW_TAG=$1
 
 NEW_NAME=$1_
-OLD_NAME="hpse_"
+OLD_NAME=${OLD_TAG}_
 
 NEW_NAME_UP=$(echo "$NEW_NAME" | tr '[:lower:]' '[:upper:]')
 OLD_NAME_UP=$(echo "$OLD_NAME" | tr '[:lower:]' '[:upper:]')
 
-NEW_NAME_HEAD=$(echo "$NEW_NAME" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
-OLD_NAME_HEAD=$(echo "$OLD_NAME" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
+NEW_NAME_HEAD=$(echo "$NEW_TAG" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
+OLD_NAME_HEAD=$(echo "$OLD_TAG" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
 
 # step1: sed (.c, .h, Makefile)
 find "$SEARCH_DIR" \( -name "*.c" -o -name "*.h" -o -name "*.mk" -o -name "Makefile" \) -type f -exec sed -i "s/$OLD_TAG/$NEW_TAG/g" {} +

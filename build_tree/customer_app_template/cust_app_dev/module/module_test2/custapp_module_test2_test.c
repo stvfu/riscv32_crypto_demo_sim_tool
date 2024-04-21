@@ -31,21 +31,21 @@ void test_custapp_module_test2(void)
     char au8HashValue[32] = {0};
 
     // set data
-    ST_HpseReqData stHpseReqData = {0};
-    stHpseReqData.u32Module       = (uint32_t)CUSTAPP_MODULE_TEST2;
-    stHpseReqData.u32HpseCmd      = (uint32_t)E_MODULE_TEST2_CMD_ID_SHA256;
-    stHpseReqData.u32InputBuffer  = (uint32_t)au8Data;
-    stHpseReqData.u32InputSize    = (uint32_t)(sizeof(au8Data));
-    stHpseReqData.u32OutputBuffer = (uint32_t)au8HashValue;
-    stHpseReqData.u32OutputSize   = (uint32_t)(sizeof(au8HashValue));
+    ST_CustappReqData stCustappReqData = {0};
+    stCustappReqData.u32Module       = (uint32_t)CUSTAPP_MODULE_TEST2;
+    stCustappReqData.u32CustappCmd      = (uint32_t)E_MODULE_TEST2_CMD_ID_SHA256;
+    stCustappReqData.u32InputBuffer  = (uint32_t)au8Data;
+    stCustappReqData.u32InputSize    = (uint32_t)(sizeof(au8Data));
+    stCustappReqData.u32OutputBuffer = (uint32_t)au8HashValue;
+    stCustappReqData.u32OutputSize   = (uint32_t)(sizeof(au8HashValue));
 
     // call service
-    custapp_execute((uint32_t)(&stHpseReqData), (uint32_t)(sizeof(stHpseReqData)));
+    custapp_execute((uint32_t)(&stCustappReqData), (uint32_t)(sizeof(stCustappReqData)));
 
     // check result
     printf("SHA256 test\n");
     printf("input data\n");
-    _DUMP(10, (char *)stHpseReqData.u32InputBuffer);
+    _DUMP(10, (char *)stCustappReqData.u32InputBuffer);
     printf("hash value\n");
-    _DUMP(32, (char *)stHpseReqData.u32OutputBuffer);
+    _DUMP(32, (char *)stCustappReqData.u32OutputBuffer);
 }

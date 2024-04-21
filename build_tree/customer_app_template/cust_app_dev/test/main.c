@@ -10,7 +10,7 @@ void test_custapp_module_test3(void);
 
 int main(void)
 {
-    printf("Start HPSE Module test:\n");
+    printf("Start Custapp Module test:\n");
 
     printf("\033[33m[0. Module sample test:]\033[0m\n");
     test_custapp_module_sample();
