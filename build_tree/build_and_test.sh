@@ -11,10 +11,10 @@ echo -e "\033[33m# Start Build sample code                     #\033[0m"
 echo -e "\033[33m###############################################\033[0m"
 make clean
 make
-cp $CURRENT_PATH/out/libMyLib.a $CURRENT_PATH/customer_app_template/hpse_app_dev/lib/sec_api/libMyLib.a
-cp $CURRENT_PATH/customer_api_wrapper/*.h $CURRENT_PATH/customer_app_template/hpse_app_dev/inc/
+cp $CURRENT_PATH/out/libMyLib.a $CURRENT_PATH/customer_app_template/cust_app_dev/lib/sec_api/libMyLib.a
+cp $CURRENT_PATH/customer_api_wrapper/*.h $CURRENT_PATH/customer_app_template/cust_app_dev/inc/
 
-cd $CURRENT_PATH/customer_app_template/hpse_app_dev
+cd $CURRENT_PATH/customer_app_template/cust_app_dev
 make clean
 make
 

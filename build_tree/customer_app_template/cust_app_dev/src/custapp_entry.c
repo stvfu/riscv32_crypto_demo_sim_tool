@@ -7,6 +7,9 @@
 #include <custapp_module_test1.h>
 #include <custapp_module_test2.h>
 #include <custapp_module_test3.h>
+#include <custapp_module_test4.h>
+#include <custapp_module_test5.h>
+#include <custapp_module_test6.h>
 
 void custapp_execute(uint32_t u32Address, uint32_t u32Size)
 {
@@ -31,6 +34,18 @@ void custapp_execute(uint32_t u32Address, uint32_t u32Size)
 
         case CUSTAPP_MODULE_TEST3:
             custapp_module_test3_execute(u32Address, u32Size);
+            break;
+
+        case CUSTAPP_MODULE_TEST4:
+            custapp_module_test4_execute(u32Address, u32Size);
+            break;
+
+        case CUSTAPP_MODULE_TEST5:
+            custapp_module_test5_execute(u32Address, u32Size);
+            break;
+
+        case CUSTAPP_MODULE_TEST6:
+            custapp_module_test6_execute(u32Address, u32Size);
             break;
 
         default:
