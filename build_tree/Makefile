@@ -127,3 +127,4 @@ clean:
 	$(Q)rm -rf $(USER_APP_PATH)/*.o
 	$(Q)rm -rf $(USER_APP_PATH)/*.su
 	$(Q)rm -rf $(USER_APP_PATH)/*.a
+	cd customer_app_template/cust_app_dev && make clean
