@@ -34,21 +34,24 @@ int sec_rsa_verify(char* n, char* exp, int size_n_in_words, int size_e_in_words,
 // ECC
 int sec_ecdsa_test(void);
 int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+int sec_ecdsa_sign(char* private_d,
+                   char* public_Q_X,
+                   char* public_Q_Y,
+                   char* add_message,
+                   int size_m_in_bytes,
+                   char* r_in_MSW,
+                   char* s_in_MSW,
+                   int hash_type
+                   );
 
-int sec_ecdsa_verify(char* p,
-                     char* a,
-                     char* b,
-                     int size_p_in_words,
-                     char* n,
-                     int size_n_in_words,
-                     int h,
-                     char* x_G,
-                     char* y_G,
-                     char* x_P,
-                     char* y_P,
+int sec_ecdsa_verify(char* public_Q_X,
+                     char* public_Q_Y,
+                     char* add_message,
+                     int size_m_in_bytes,
                      char* r_in_MSW,
                      char* s_in_MSW,
-                     int hash_type);
+                     int hash_type
+                     );
 
 int sec_ecdsa_verify_by_keyidx(char* add_message,
                                int size_m_in_bytes,
