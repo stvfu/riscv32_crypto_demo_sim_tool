@@ -86,3 +86,25 @@ customization_error_t customization_rsa_sign(uint32_t* n,
                          uint32_t message_size_in_words,
                          const uint32_t  *add_signature,
                          uint32_t signature_size_in_words);
+
+// ECC
+customization_error_t customization_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+
+customization_error_t customization_ecdsa_sign(char* private_d,
+                   char* public_Q_X,
+                   char* public_Q_Y,
+                   char* add_message,
+                   int size_m_in_bytes,
+                   char* r_in_MSW,
+                   char* s_in_MSW,
+                   int hash_type
+                   );
+
+customization_error_t customization_ecdsa_verify(char* public_Q_X,
+                     char* public_Q_Y,
+                     char* add_message,
+                     int size_m_in_bytes,
+                     char* r_in_MSW,
+                     char* s_in_MSW,
+                     int hash_type
+                     );

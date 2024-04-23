@@ -226,3 +226,58 @@ customization_error_t customization_rsa_verify(uint32_t* n,
     return 0;
 }
 
+
+// ECC
+customization_error_t customization_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y);
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
+
+customization_error_t customization_ecdsa_sign(char* private_d,
+                   char* public_Q_X,
+                   char* public_Q_Y,
+                   char* add_message,
+                   int size_m_in_bytes,
+                   char* r_in_MSW,
+                   char* s_in_MSW,
+                   int hash_type
+                   )
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecdsa_sign((char*)private_d,
+                   (char*)public_Q_X,
+                   (char*)public_Q_Y,
+                   (char*)add_message,
+                   (int)size_m_in_bytes,
+                   (char*)r_in_MSW,
+                   (char*)s_in_MSW,
+                   (int)hash_type
+                   );
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
+
+
+customization_error_t customization_ecdsa_verify(char* public_Q_X,
+                     char* public_Q_Y,
+                     char* add_message,
+                     int size_m_in_bytes,
+                     char* r_in_MSW,
+                     char* s_in_MSW,
+                     int hash_type)
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecdsa_verify((char*)public_Q_X,
+                     (char*)public_Q_Y,
+                     (char*)add_message,
+                     (int)size_m_in_bytes,
+                     (char*)r_in_MSW,
+                     (char*)s_in_MSW,
+                     (int)hash_type
+                     );
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
