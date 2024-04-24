@@ -249,6 +249,8 @@ int sec_rsa_sign(char* exp,
 
     mbedtls_rsa_complete(&ctx);
     printf("u32Res = %x\n", u32Res);
+    mbedtls_rsa_check_privkey(&ctx);
+    printf("u32Res = %x\n", u32Res);
 
     mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
     sec_show_all_ecdsa_key(ctx);

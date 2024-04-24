@@ -89,6 +89,12 @@ customization_error_t customization_rsa_sign(uint32_t* n,
 
 // ECC
 customization_error_t customization_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_p256_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_p384_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_p521_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_bp256_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_bp384_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_bp512_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
 
 customization_error_t customization_ecdsa_sign(char* private_d,
                    char* public_Q_X,

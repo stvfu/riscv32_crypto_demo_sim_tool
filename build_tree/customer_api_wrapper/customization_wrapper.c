@@ -226,12 +226,50 @@ customization_error_t customization_rsa_verify(uint32_t* n,
     return 0;
 }
 
-
 // ECC
-customization_error_t customization_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+customization_error_t customization_ecc_p256_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
 {
     _CUSTOMIZATION_TRACE_IN
-    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y);
+    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y, (int)E_ECC_P256);
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
+
+customization_error_t customization_ecc_p384_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y, (int)E_ECC_P384);
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
+
+customization_error_t customization_ecc_p521_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y, (int)E_ECC_P521);
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
+customization_error_t customization_ecc_bp256_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y, (int)E_ECC_BRAINPOLLP256R1);
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
+
+customization_error_t customization_ecc_bp384_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y, (int)E_ECC_BRAINPOLLP384R1);
+    _CUSTOMIZATION_TRACE_OUT
+    return 0;
+}
+
+customization_error_t customization_ecc_bp512_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+{
+    _CUSTOMIZATION_TRACE_IN
+    sec_ecc_generate_key((char*)private_d, (char*)public_Q_X, (char*)public_Q_Y, (int)E_ECC_BRAINPOLLP512R1);
     _CUSTOMIZATION_TRACE_OUT
     return 0;
 }
@@ -254,12 +292,12 @@ customization_error_t customization_ecdsa_sign(char* private_d,
                    (int)size_m_in_bytes,
                    (char*)r_in_MSW,
                    (char*)s_in_MSW,
-                   (int)hash_type
+                   (int)hash_type,
+                   (int)E_ECC_P256
                    );
     _CUSTOMIZATION_TRACE_OUT
     return 0;
 }
-
 
 customization_error_t customization_ecdsa_verify(char* public_Q_X,
                      char* public_Q_Y,
@@ -276,7 +314,8 @@ customization_error_t customization_ecdsa_verify(char* public_Q_X,
                      (int)size_m_in_bytes,
                      (char*)r_in_MSW,
                      (char*)s_in_MSW,
-                     (int)hash_type
+                     (int)hash_type,
+                     (int)E_ECC_P256
                      );
     _CUSTOMIZATION_TRACE_OUT
     return 0;

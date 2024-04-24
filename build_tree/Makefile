@@ -103,9 +103,9 @@ $(USER_APP): $(TARGET)
 
 $(BIN): $(TARGET)
 	@echo "  Build $(BIN) :"
-	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ test/main.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET)  $(LIBS)
+	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@ test/main.c -I./test $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET)  $(LIBS)
 	@echo "  Build $(BIN)_suite :"
-	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@_suite test/test_app.c $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET) $(LIBS)
+	$(Q)$(CC) $(CFLAGS) -o $(OUTPUT_PATH)/$@_suite test/test_app.c -I./test $(LDFLAGS) $(LDLIBS) -L$(OUTPUT_PATH) -l$(TARGET) $(LIBS)
 
 $(TARGET): $(OBJS)
 	@echo "   object (.o) --> library(.a)"

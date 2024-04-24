@@ -66,7 +66,23 @@ static void sec_show_all_ecdsa_key(mbedtls_ecdsa_context ctx)
     sec_print_ecdsa_key("ecdsa ecc param T_Y", &ctx.grp.T->Y);
 }
 
-int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
+static void sec_algo_converter(E_Sec_Ecc_Curves eAlgo, mbedtls_ecp_group_id* pGid, int *pu32KeySize)
+{
+    switch(eAlgo)
+    {
+        case E_ECC_P192:            *pGid = MBEDTLS_ECP_DP_SECP192R1; *pu32KeySize = 24; break;
+        case E_ECC_P224:            *pGid = MBEDTLS_ECP_DP_SECP224R1; *pu32KeySize = 28; break;
+        case E_ECC_P256:            *pGid = MBEDTLS_ECP_DP_SECP256R1; *pu32KeySize = 32; break;
+        case E_ECC_P384:            *pGid = MBEDTLS_ECP_DP_SECP384R1; *pu32KeySize = 48; break;
+        case E_ECC_P521:            *pGid = MBEDTLS_ECP_DP_SECP521R1; *pu32KeySize = 65; break;
+        case E_ECC_BRAINPOLLP256R1: *pGid = MBEDTLS_ECP_DP_BP256R1;   *pu32KeySize = 32; break;
+        case E_ECC_BRAINPOLLP384R1: *pGid = MBEDTLS_ECP_DP_BP384R1;   *pu32KeySize = 48; break;
+        case E_ECC_BRAINPOLLP512R1: *pGid = MBEDTLS_ECP_DP_BP512R1;   *pu32KeySize = 64; break;
+        default:                    *pGid = MBEDTLS_ECP_DP_NONE;      *pu32KeySize = 0;  break;
+    }
+}
+
+int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y, int u32EccCurves)
 {
     int ret = 0;
     char buf[97];
@@ -83,7 +99,11 @@ int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
     mbedtls_ecdsa_context ctx;
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
-
+  
+    mbedtls_ecp_group_id gid;
+    int key_size = 0;
+    sec_algo_converter((E_Sec_Ecc_Curves)u32EccCurves, &gid, &key_size);
+  
     // Initialize the ECDSA structure
     mbedtls_ecdsa_init(&ctx);
     mbedtls_entropy_init(&entropy);
@@ -98,8 +118,10 @@ int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y)
     mbedtls_printf("\n  . setup rng ... ok\n\n");
 
     //generate ECDSA key pair
+
+
     ret = mbedtls_ecdsa_genkey(&ctx,
-                               MBEDTLS_ECP_DP_SECP256R1, //select SECP256R1
+                               gid,
                                mbedtls_ctr_drbg_random,
                                &ctr_drbg);
 
@@ -130,7 +152,15 @@ cleanup:
     return(ret != 0);
 }
 
-int sec_ecdsa_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type)
+int sec_ecdsa_sign(char* private_d,
+                   char* public_Q_X,
+                   char* public_Q_Y,
+                   char* add_message,
+                   int size_m_in_bytes,
+                   char* r_in_MSW,
+                   char* s_in_MSW,
+                   int hash_type,
+                   int u32EccCurves)
 {
     int ret = 0;
     char buf[97];
@@ -148,10 +178,14 @@ int sec_ecdsa_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* ad
 
     mbedtls_mpi r, s;
 
-    char au8Key[65]= {0};
+    mbedtls_ecp_group_id gid;
+    int key_size = 0;
+    sec_algo_converter((E_Sec_Ecc_Curves)u32EccCurves, &gid, &key_size);
+  
+    char au8Key[256]= {0};
     au8Key[0]=0x04;
-    memcpy((void *)(au8Key+1), (const void *)public_Q_X, (size_t)32);
-    memcpy((void *)(au8Key+33), (const void *)public_Q_Y, (size_t)32);
+    memcpy((void *)(au8Key+1), (const void *)public_Q_X, (size_t)key_size);
+    memcpy((void *)(au8Key+key_size+1), (const void *)public_Q_Y, (size_t)key_size);
 
     // init struct
     mbedtls_ecdsa_context ctx;
@@ -179,17 +213,17 @@ int sec_ecdsa_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* ad
     mbedtls_ecp_point_init(&public_key.Q);
 
     mbedtls_ecp_group_init(&public_key.grp);
-    mbedtls_ecp_group_load(&public_key.grp, MBEDTLS_ECP_DP_SECP256R1);
+    mbedtls_ecp_group_load(&public_key.grp, gid);
     //ret = mbedtls_ecp_group_load(&ctx.grp, MBEDTLS_ECP_DP_SECP256R1);
 
     // set private key
 //    mbedtls_mpi_read_binary(&ctx.Q.X, (const unsigned char *)public_Q_X, 32);
 //    mbedtls_mpi_read_binary(&ctx.Q.Y, (const unsigned char *)public_Q_Y, 32);
-    mbedtls_mpi_read_binary(&public_key.d, (const unsigned char *)private_d, (size_t)32);
+    mbedtls_mpi_read_binary(&public_key.d, (const unsigned char *)private_d, (size_t)key_size);
     mbedtls_ecp_point_read_binary(&public_key.grp,
                                   &public_key.Q,
                                   (const unsigned char *)au8Key,
-                                  (size_t)sizeof(au8Key));
+                                  (size_t)(1+2*key_size));
 
     mbedtls_ecdsa_from_keypair(&ctx, &public_key);
 
@@ -243,7 +277,8 @@ int sec_ecdsa_verify(char* public_Q_X,
                      int size_m_in_bytes,
                      char* r_in_MSW,
                      char* s_in_MSW,
-                     int hash_type)
+                     int hash_type,
+                     int u32EccCurves)
 {
     int ret = 0;
     char buf[97];
@@ -261,10 +296,15 @@ int sec_ecdsa_verify(char* public_Q_X,
 
     mbedtls_mpi r, s;
 
-    char au8Key[65]= {0};
+    mbedtls_ecp_group_id gid;
+    int key_size = 0;
+    sec_algo_converter((E_Sec_Ecc_Curves)u32EccCurves, &gid, &key_size);
+  
+    char au8Key[256]= {0};
     au8Key[0]=0x04;
-    memcpy((void *)(au8Key+1), (const void *)public_Q_X, (size_t)32);
-    memcpy((void *)(au8Key+33), (const void *)public_Q_Y, (size_t)32);
+    memcpy((void *)(au8Key+1), (const void *)public_Q_X, (size_t)key_size);
+    memcpy((void *)(au8Key+key_size+1), (const void *)public_Q_Y, (size_t)key_size);
+_DUMP_(256, au8Key);
 
     // init struct
     mbedtls_ecdsa_context ctx;
@@ -292,14 +332,14 @@ int sec_ecdsa_verify(char* public_Q_X,
     mbedtls_ecp_point_init(&public_key.Q);
 
     mbedtls_ecp_group_init(&public_key.grp);
-    mbedtls_ecp_group_load(&public_key.grp, MBEDTLS_ECP_DP_SECP256R1);
+    mbedtls_ecp_group_load(&public_key.grp, gid);
 
     // set private key
     //mbedtls_mpi_read_binary(&public_key.d, (const unsigned char *)private_d, (size_t)32);
     mbedtls_ecp_point_read_binary(&public_key.grp,
                                   &public_key.Q,
                                   (const unsigned char *)au8Key,
-                                  (size_t)sizeof(au8Key));
+                                  (size_t)(1+2*key_size));
 
     mbedtls_ecdsa_from_keypair(&ctx, &public_key);
 
@@ -313,8 +353,8 @@ int sec_ecdsa_verify(char* public_Q_X,
     mbedtls_printf("  1. hash ... ok\n"); //calculate the hash value of msg
 
 
-    mbedtls_mpi_read_binary(&r, (const unsigned char *)r_in_MSW, (size_t)32);
-    mbedtls_mpi_read_binary(&s, (const unsigned char *)s_in_MSW, (size_t)32);
+    mbedtls_mpi_read_binary(&r, (const unsigned char *)r_in_MSW, (size_t)key_size);
+    mbedtls_mpi_read_binary(&s, (const unsigned char *)s_in_MSW, (size_t)key_size);
     //ECDSA verify
     ret = mbedtls_ecdsa_verify(&ctx.grp,
                                hash,
@@ -346,100 +386,5 @@ cleanup:
 
 int sec_ecdsa_test(void)
 {
-    int ret = 0;
-    char buf[97];
-    uint8_t hash[32], msg[100];
-    const char *pers = "simple_ecdsa";
-
-    size_t rlen, slen, qlen, dlen;
-    memset(msg, 0x12, sizeof(msg));
-
-    //mbedtls_platform_set_printf(printf);
-
-    mbedtls_mpi r, s;
-    mbedtls_ecdsa_context ctx;
-    mbedtls_md_context_t md_ctx;
-    mbedtls_entropy_context entropy;
-    mbedtls_ctr_drbg_context ctr_drbg;
-
-    mbedtls_mpi_init(&r);
-    mbedtls_mpi_init(&s);
-    mbedtls_ecdsa_init(&ctx);  // Initialize the ECDSA structure
-    mbedtls_entropy_init(&entropy);
-    mbedtls_ctr_drbg_init(&ctr_drbg);
-    /*
-    mbedtls_entropy_add_source(&entropy, entropy_source, NULL,
-                   MBEDTLS_ENTROPY_MAX_GATHER, MBEDTLS_ENTROPY_SOURCE_STRONG);*/
-    ret = mbedtls_ctr_drbg_seed(&ctr_drbg,
-                                sw_entropy, &entropy,
-                                (const uint8_t *)pers,
-                                strlen(pers));
-
-    assert_exit(ret == 0, ret);
-    mbedtls_printf("\n  . setup rng ... ok\n\n");
-
-    mbedtls_md_init(&md_ctx);
-    mbedtls_md(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), msg, sizeof(msg), hash);
-    mbedtls_printf("  1. hash msg ... ok\n"); //calculate the hash value of msg
-
-    //generate ECDSA key pair
-    ret = mbedtls_ecdsa_genkey(&ctx,
-                               MBEDTLS_ECP_DP_SECP256R1, //select SECP256R1
-                               mbedtls_ctr_drbg_random,
-                               &ctr_drbg);
-
-    assert_exit(ret == 0, ret);
-    mbedtls_ecp_point_write_binary(&ctx.grp,
-                                   &ctx.Q,
-                                   MBEDTLS_ECP_PF_UNCOMPRESSED,
-                                   &qlen,
-                                   (unsigned char *)buf,
-                                   sizeof(buf));
-
-    dlen = mbedtls_mpi_size(&ctx.d);
-    mbedtls_mpi_write_binary(&ctx.d, (unsigned char *)(buf + qlen), dlen);
-    mbedtls_printf("  2. ecdsa generate keypair:\n");
-    _DUMP_((int)(qlen + dlen), (char *)buf);
-
-    //ECDSA signature, get r, s
-    ret = mbedtls_ecdsa_sign(&ctx.grp,
-                             &r,
-                             &s,
-                             &ctx.d,
-                             hash,
-                             sizeof(hash),
-                             mbedtls_ctr_drbg_random,
-                             &ctr_drbg);
-
-    assert_exit(ret == 0, ret);
-    rlen = mbedtls_mpi_size(&r);
-    slen = mbedtls_mpi_size(&s);
-    mbedtls_mpi_write_binary(&r, (unsigned char *)buf, rlen);
-    mbedtls_mpi_write_binary(&s, (unsigned char *)(buf + rlen), slen);
-
-    mbedtls_printf("  3. ecdsa generate signature:\n");
-    _DUMP_((int)(rlen + slen), (char *)buf);
-
-    //ECDSA verify
-    ret = mbedtls_ecdsa_verify(&ctx.grp, hash, sizeof(hash), &ctx.Q, &r, &s);
-    assert_exit(ret == 0, ret);
-    mbedtls_printf("  4. ecdsa verify signature ... ok\n\n");
-
-    if(ret == 0)
-    {
-        printf("\033[32m ECDSSA Sig Verify Pass!\033[0m\n");
-
-    }
-    else
-    {
-        printf("\033[31m ECDSSA Sig Verify Fail!\033[0m\n");
-    }
-cleanup:
-    mbedtls_mpi_free(&r);
-    mbedtls_mpi_free(&s);
-    mbedtls_md_free(&md_ctx);
-    mbedtls_ecdsa_free(&ctx);
-    mbedtls_ctr_drbg_free(&ctr_drbg);
-    mbedtls_entropy_free(&entropy);
-    return(ret != 0);
+    return 0;
 }

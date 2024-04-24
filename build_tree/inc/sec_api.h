@@ -3,6 +3,18 @@ typedef enum {
     ENUM_LIBTOM
 } CryptoLib;
 
+typedef enum {
+    E_ECC_P192,
+    E_ECC_P224,
+    E_ECC_P256,
+    E_ECC_P384,
+    E_ECC_P521,
+    E_ECC_BRAINPOLLP256R1,
+    E_ECC_BRAINPOLLP384R1,
+    E_ECC_BRAINPOLLP512R1,
+    E_ECC_LAST,
+} E_Sec_Ecc_Curves;
+
 // random
 int sec_generate_random_buffer(char *out_buf, int size);
 
@@ -48,7 +60,7 @@ int sec_rsa_sign(char* exp,
 
 // ECC
 int sec_ecdsa_test(void);
-int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y, int u32EccCurves);
 int sec_ecdsa_sign(char* private_d,
                    char* public_Q_X,
                    char* public_Q_Y,
@@ -56,7 +68,8 @@ int sec_ecdsa_sign(char* private_d,
                    int size_m_in_bytes,
                    char* r_in_MSW,
                    char* s_in_MSW,
-                   int hash_type
+                   int hash_type,
+                   int u32EccCurves
                    );
 
 int sec_ecdsa_verify(char* public_Q_X,
@@ -65,7 +78,8 @@ int sec_ecdsa_verify(char* public_Q_X,
                      int size_m_in_bytes,
                      char* r_in_MSW,
                      char* s_in_MSW,
-                     int hash_type
+                     int hash_type,
+                     int u32EccCurves
                      );
 
 int sec_ecdsa_verify_by_keyidx(char* add_message,
