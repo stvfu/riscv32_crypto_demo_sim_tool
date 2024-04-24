@@ -31,6 +31,21 @@ void sec_GenRsaKey(void);
 int sec_rsa_generate_key(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits);
 int sec_rsa_verify(char* n, char* exp, int size_n_in_words, int size_e_in_words, int hash_type, char *add_message, int message_size_in_words, char *add_signature, int signature_size_in_words);
 
+int sec_rsa_sign(char* exp,
+                 char* p,
+                 char* q,
+                 char* dP,
+                 char* dQ,
+                 char* qInv,
+                 int size_n_in_words,
+                 int size_e_in_words,
+                 int size_p_in_words,
+                 int hash_type,
+                 char *add_message,
+                 int message_size_in_words,
+                 char *add_signature,
+                 int signature_size_in_words);
+
 // ECC
 int sec_ecdsa_test(void);
 int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);

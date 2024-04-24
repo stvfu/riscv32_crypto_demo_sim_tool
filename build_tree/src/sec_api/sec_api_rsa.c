@@ -77,6 +77,17 @@ static void sec_print_rsa_key(char * string, const mbedtls_mpi *X)
     mbedtls_printf("%s: %s\n", string, tempbuf);
 }
 
+static void sec_show_all_ecdsa_key(mbedtls_rsa_context ctx)
+{
+    sec_print_rsa_key("N       ", &ctx.N);
+    sec_print_rsa_key("E       ", &ctx.E);
+    sec_print_rsa_key("D       ", &ctx.D);
+    sec_print_rsa_key("P       ", &ctx.P);
+    sec_print_rsa_key("Q       ", &ctx.Q);
+    sec_print_rsa_key("DP      ", &ctx.DP);
+    sec_print_rsa_key("DQ      ", &ctx.DQ);
+    sec_print_rsa_key("QP(qInv)", &ctx.QP);
+}
 void sec_GenRsaKey_impl(char* n, char* p, char* q, char* dP, char* dQ, char* qInv, int e_value, int size_n_bits)
 {
     int ret;
@@ -111,16 +122,8 @@ void sec_GenRsaKey_impl(char* n, char* p, char* q, char* dP, char* dQ, char* qIn
 
     uint8_t buf[516];
     mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
-  
-    sec_print_rsa_key("N       ", &ctx.N);
-    sec_print_rsa_key("E       ", &ctx.E);
-    sec_print_rsa_key("D       ", &ctx.D);
-    sec_print_rsa_key("P       ", &ctx.P);
-    sec_print_rsa_key("Q       ", &ctx.Q);
-    sec_print_rsa_key("DP      ", &ctx.DP);
-    sec_print_rsa_key("DQ      ", &ctx.DQ);
-    sec_print_rsa_key("QP(qInv)", &ctx.QP);
-  
+    sec_show_all_ecdsa_key(ctx);
+
     mbedtls_mpi_write_binary(&ctx.N, (unsigned char * )n, (size_t)(size_n_bits/8));
     mbedtls_mpi_write_binary(&ctx.P, (unsigned char * )p, (size_t)(size_n_bits/8/2));
     mbedtls_mpi_write_binary(&ctx.Q, (unsigned char * )q, (size_t)(size_n_bits/8/2));
@@ -137,6 +140,7 @@ cleanup:
 
     return;
 }
+
 
 int sec_rsa_verify(char* n,
                    char* exp,
@@ -171,11 +175,8 @@ int sec_rsa_verify(char* n,
                            );
 
     mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
-    mbedtls_mpi_write_string(&ctx.N , 16, (char *)buf, sizeof(buf), &olen);
-    mbedtls_printf("N: %s\n", buf);
-
-    mbedtls_mpi_write_string(&ctx.E , 16, (char *)buf, sizeof(buf), &olen);
-    mbedtls_printf("E: %s\n", buf);
+    sec_show_all_ecdsa_key(ctx);
+    mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
 
     u32Res = mbedtls_rsa_pkcs1_verify(&ctx,
                            (mbedtls_md_type_t)hash_type,
@@ -196,3 +197,75 @@ int sec_rsa_verify(char* n,
     _SEC_TRACE_OUT
     return u32Res;
 }
+
+int sec_rsa_sign(char* exp,
+                 char* p,
+                 char* q,
+                 char* dP,
+                 char* dQ,
+                 char* qInv,
+                 int size_n_in_words,
+                 int size_e_in_words,
+                 int size_p_in_words,
+                 int hash_type,
+                 char *add_message,
+                 int message_size_in_words,
+                 char *add_signature,
+                 int signature_size_in_words)
+{
+
+    _SEC_TRACE_IN
+    int u32Res = 0;
+    size_t olen = 0;
+    uint8_t buf[516]={0};
+
+    const char *pers = "simple_rsa";
+
+    mbedtls_rsa_context ctx; // RSA context
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    mbedtls_rsa_init(&ctx); // init RSA context
+    mbedtls_entropy_init(&entropy); // init entropy
+    mbedtls_ctr_drbg_init(&ctr_drbg); // init random context
+
+    mbedtls_rsa_set_padding(&ctx, 0, MBEDTLS_MD_NONE);
+
+    u32Res = mbedtls_ctr_drbg_seed(&ctr_drbg, sw_entropy, &entropy,
+                                (const uint8_t *) pers, strlen(pers));
+
+    mbedtls_rsa_import_raw(&ctx,
+                           NULL,
+                           0,
+                           (unsigned char const *)p, //P
+                           (size_t)size_p_in_words,
+                           (unsigned char const *)q, //Q
+                           (size_t)size_p_in_words,
+                           NULL, //D
+                           0,
+                           (unsigned char const *)exp,
+                           (size_t)size_e_in_words
+                           );
+
+    mbedtls_rsa_complete(&ctx);
+    printf("u32Res = %x\n", u32Res);
+
+    mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
+    sec_show_all_ecdsa_key(ctx);
+    mbedtls_printf("\n  +++++++++++++++++ rsa keypair +++++++++++++++++\n\n");
+
+    //sign
+    u32Res = mbedtls_rsa_pkcs1_sign(&ctx,
+                                    sw_entropy,
+                                    NULL,
+                                    MBEDTLS_MD_SHA256,
+                                    (unsigned int)message_size_in_words,
+                                    (const unsigned char *)add_message,
+                                    (unsigned char *)add_signature);
+    printf("u32Res = %x\n", u32Res);
+
+    mbedtls_rsa_free(&ctx);         // release rsa struct
+    _SEC_TRACE_OUT
+    return u32Res;
+}
+
