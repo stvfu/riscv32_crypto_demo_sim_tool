@@ -128,7 +128,7 @@
  *       regardless of the setting of MBEDTLS_HAVE_TIME, unless
  *       MBEDTLS_TIMING_ALT is used. See timing.c for more information.
  */
-#define MBEDTLS_HAVE_TIME
+//#define MBEDTLS_HAVE_TIME
 
 /**
  * \def MBEDTLS_HAVE_TIME_DATE
@@ -149,7 +149,7 @@
  * mbedtls_platform_gmtime_r() at compile-time by using the macro
  * MBEDTLS_PLATFORM_GMTIME_R_ALT.
  */
-//#define MBEDTLS_HAVE_TIME_DATE
+////#define MBEDTLS_HAVE_TIME_DATE
 
 /**
  * \def MBEDTLS_PLATFORM_MEMORY
@@ -258,7 +258,7 @@
 //#define MBEDTLS_PLATFORM_VSNPRINTF_ALT
 //#define MBEDTLS_PLATFORM_NV_SEED_ALT
 //#define MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT
-#define MBEDTLS_PLATFORM_MS_TIME_ALT
+//#define MBEDTLS_PLATFORM_MS_TIME_ALT
 
 /**
  * Uncomment the macro to let Mbed TLS use your alternate implementation of
@@ -1206,7 +1206,6 @@
  *
  * Uncomment this macro to disable the built-in platform entropy functions.
  */
-//
 #define MBEDTLS_NO_PLATFORM_ENTROPY
 
 /**
@@ -1470,6 +1469,26 @@
 //#define MBEDTLS_PSA_INJECT_ENTROPY
 
 /**
+ * \def MBEDTLS_PSA_ASSUME_EXCLUSIVE_BUFFERS
+ *
+ * Assume all buffers passed to PSA functions are owned exclusively by the
+ * PSA function and are not stored in shared memory.
+ *
+ * This option may be enabled if all buffers passed to any PSA function reside
+ * in memory that is accessible only to the PSA function during its execution.
+ *
+ * This option MUST be disabled whenever buffer arguments are in memory shared
+ * with an untrusted party, for example where arguments to PSA calls are passed
+ * across a trust boundary.
+ *
+ * \note Enabling this option reduces memory usage and code size.
+ *
+ * \note Enabling this option causes overlap of input and output buffers
+ *       not to be supported by PSA functions.
+ */
+//#define MBEDTLS_PSA_ASSUME_EXCLUSIVE_BUFFERS
+
+/**
  * \def MBEDTLS_RSA_NO_CRT
  *
  * Do not use the Chinese Remainder Theorem
@@ -1725,9 +1744,6 @@
  *
  * Enable support for RFC 8449 record_size_limit extension in SSL (TLS 1.3 only).
  *
- * \warning This extension is currently in development and must NOT be used except
- *          for testing purposes.
- *
  * Requires: MBEDTLS_SSL_PROTO_TLS1_3
  *
  * Uncomment this macro to enable support for the record_size_limit extension
@@ -1775,7 +1791,7 @@
  *
  * Uncomment this macro to enable the support for TLS 1.3.
  */
-//#define MBEDTLS_SSL_PROTO_TLS1_3
+#define MBEDTLS_SSL_PROTO_TLS1_3
 
 /**
  * \def MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
@@ -1797,7 +1813,7 @@
  * effect on the build.
  *
  */
-//#define MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
+#define MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
 
 /**
  * \def MBEDTLS_SSL_TLS1_3_KEY_EXCHANGE_MODE_PSK_ENABLED
@@ -1854,9 +1870,6 @@
  *
  * Comment this to disable support for early data. If MBEDTLS_SSL_PROTO_TLS1_3
  * is not enabled, this option does not have any effect on the build.
- *
- * This feature is experimental, not completed and thus not ready for
- * production.
  *
  * \note The maximum amount of early data can be set with
  *       MBEDTLS_SSL_MAX_EARLY_DATA_SIZE.
@@ -2212,7 +2225,7 @@
  * Enable AES-NI support on x86-64 or x86-32.
  *
  * \note AESNI is only supported with certain compilers and target options:
- * - Visual Studio 2013: supported.
+ * - Visual Studio: supported
  * - GCC, x86-64, target not explicitly supporting AESNI:
  *   requires MBEDTLS_HAVE_ASM.
  * - GCC, x86-32, target not explicitly supporting AESNI:
@@ -2802,6 +2815,22 @@
 #define MBEDTLS_GCM_C
 
 /**
+ * \def MBEDTLS_GCM_LARGE_TABLE
+ *
+ * Enable large pre-computed tables for  Galois/Counter Mode (GCM).
+ * Can significantly increase throughput on systems without GCM hardware
+ * acceleration (e.g., AESNI, AESCE).
+ *
+ * The mbedtls_gcm_context size will increase by 3840 bytes.
+ * The code size will increase by roughly 344 bytes.
+ *
+ * Module:  library/gcm.c
+ *
+ * Requires: MBEDTLS_GCM_C
+ */
+//#define MBEDTLS_GCM_LARGE_TABLE
+
+/**
  * \def MBEDTLS_HKDF_C
  *
  * Enable the HKDF algorithm (RFC 5869).
@@ -3185,6 +3214,9 @@
  *
  * \deprecated This feature is deprecated. Please switch to the PSA driver
  *             interface.
+ *
+ * \warning    This feature is not thread-safe, and should not be used in a
+ *             multi-threaded environment.
  *
  * Module:  library/psa_crypto_se.c
  *
@@ -4127,10 +4159,6 @@
  *
  * If MBEDTLS_SSL_EARLY_DATA is not defined, this default value does not
  * have any impact on the build.
- *
- * This feature is experimental, not completed and thus not ready for
- * production.
- *
  */
 //#define MBEDTLS_SSL_MAX_EARLY_DATA_SIZE        1024
 

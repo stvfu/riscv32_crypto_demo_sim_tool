@@ -5,7 +5,7 @@ echo $CURRENT_PATH
 rm -rf $CURRENT_PATH/mbedtls
 git clone https://github.com/Mbed-TLS/mbedtls.git
 cd mbedtls
-git checkout 0315123cfb08ef1842fe8b641e4a77d0dcce4451
+git checkout v3.6.0
 
 #git reset --hard
 sed -i 's/#define MBEDTLS_HAVE_TIME/\/\/#define MBEDTLS_HAVE_TIME/' $CURRENT_PATH/mbedtls/include/mbedtls/mbedtls_config.h
