@@ -1,5 +1,5 @@
 # RISC-V security SW function 開發包 demo
-繁體中文 | [English]](README.md)
+繁體中文 | [English](README.md)
 
 ## 準備 RISC-V Tool 與 security function 的 demo
 
