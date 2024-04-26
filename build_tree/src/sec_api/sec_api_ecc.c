@@ -198,6 +198,10 @@ int sec_ecdsa_sign(char* private_d,
     mbedtls_entropy_init(&entropy);
     mbedtls_ctr_drbg_init(&ctr_drbg);
 
+    // Init Signature
+    mbedtls_mpi_init(&r);
+    mbedtls_mpi_init(&s);
+
     // setup random
     ret = mbedtls_ctr_drbg_seed(&ctr_drbg,
                                 sw_entropy, &entropy,
@@ -314,6 +318,10 @@ int sec_ecdsa_verify(char* public_Q_X,
     mbedtls_ecdsa_init(&ctx);
     mbedtls_entropy_init(&entropy);
     mbedtls_ctr_drbg_init(&ctr_drbg);
+
+    // Init Signature
+    mbedtls_mpi_init(&r);
+    mbedtls_mpi_init(&s);
 
     // setup random
     ret = mbedtls_ctr_drbg_seed(&ctr_drbg,
