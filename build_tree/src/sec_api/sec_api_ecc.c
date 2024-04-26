@@ -270,7 +270,6 @@ cleanup:
     mbedtls_entropy_free(&entropy);
     return 0;
 }
-
 int sec_ecdsa_verify(char* public_Q_X,
                      char* public_Q_Y,
                      char* add_message,
@@ -304,7 +303,6 @@ int sec_ecdsa_verify(char* public_Q_X,
     au8Key[0]=0x04;
     memcpy((void *)(au8Key+1), (const void *)public_Q_X, (size_t)key_size);
     memcpy((void *)(au8Key+key_size+1), (const void *)public_Q_Y, (size_t)key_size);
-_DUMP_(256, au8Key);
 
     // init struct
     mbedtls_ecdsa_context ctx;

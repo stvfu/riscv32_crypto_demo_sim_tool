@@ -89,22 +89,26 @@ customization_error_t customization_rsa_sign(uint32_t* n,
 
 // ECC
 customization_error_t customization_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_p256_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_p384_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_p521_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_bp256_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_bp384_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
+customization_error_t customization_ecc_bp512_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
 
-customization_error_t customization_ecdsa_sign(char* private_d,
-                   char* public_Q_X,
-                   char* public_Q_Y,
-                   char* add_message,
-                   int size_m_in_bytes,
-                   char* r_in_MSW,
-                   char* s_in_MSW,
-                   int hash_type
-                   );
+customization_error_t customization_ecdsa_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_p256_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_p384_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_p521_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_bp256_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_bp385_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_bp512_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
 
-customization_error_t customization_ecdsa_verify(char* public_Q_X,
-                     char* public_Q_Y,
-                     char* add_message,
-                     int size_m_in_bytes,
-                     char* r_in_MSW,
-                     char* s_in_MSW,
-                     int hash_type
-                     );
+customization_error_t customization_ecdsa_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_p256_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_p384_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_p521_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_bp256_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_bp385_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_bp512_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+
