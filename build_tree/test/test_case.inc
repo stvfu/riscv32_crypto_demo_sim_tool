@@ -46,7 +46,8 @@ static void test_ecdsa_p521_verify(void);
 static void test_ecdsa_bp256_verify(void);
 static void test_ecdsa_bp384_verify(void);
 static void test_ecdsa_bp512_verify(void);
-static void test_ecdsa_test(void);
+static void test_ecdsa_p256_test(void);
+static void test_ecdsa_p384_test(void);
 static void test_ecdh_test(void);
 
 static MENU MENU_TABLE[] = {
@@ -106,7 +107,10 @@ static MENU MENU_TABLE[] = {
     { "test ecdsa bp-256 verify",            &test_ecdsa_bp256_verify},
     { "test ecdsa bp-384 verify",            &test_ecdsa_bp384_verify},
     { "test ecdsa bp-512 verify",            &test_ecdsa_bp512_verify},
-    { "test ecdsa test",                     &test_ecdsa_test},
+
+    // ecdh
+    { "test ecdsa p-256 genkey+sign+verify", &test_ecdsa_p256_test},
+    { "test ecdsa p-384 genkey+sign+verify", &test_ecdsa_p384_test},
 
     // ecdh
     { "test ecdh test",                      &test_ecdh_test},

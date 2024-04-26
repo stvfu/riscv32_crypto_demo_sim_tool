@@ -157,10 +157,17 @@ char au8EccPublicKey_BP512_Q_Y[64]=
 ////////////////////////////////////////////////////////////////////////
 // P521 key
 
-static void test_ecdsa_test(void)
+static void test_ecdsa_p256_test(void)
 {
     _TEST_SUITE_TRACE_IN
-    sec_ecdsa_test();
+    sec_ecdsa_p256_test();
+    _TEST_SUITE_TRACE_OUT
+}
+
+static void test_ecdsa_p384_test(void)
+{
+    _TEST_SUITE_TRACE_IN
+    sec_ecdsa_p384_test();
     _TEST_SUITE_TRACE_OUT
 }
 

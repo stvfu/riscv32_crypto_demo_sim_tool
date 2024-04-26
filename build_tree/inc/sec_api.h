@@ -59,7 +59,8 @@ int sec_rsa_sign(char* exp,
                  int signature_size_in_words);
 
 // ECC
-int sec_ecdsa_test(void);
+int sec_ecdsa_p256_test(void);
+int sec_ecdsa_p384_test(void);
 int sec_ecc_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y, int u32EccCurves);
 int sec_ecdsa_sign(char* private_d,
                    char* public_Q_X,

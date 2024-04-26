@@ -382,7 +382,203 @@ cleanup:
     return(ret != 0);
 }
 
-int sec_ecdsa_test(void)
+int sec_ecdsa_p256_test(void)
 {
-    return 0;
+
+    int ret = 0;
+    char buf[97];
+    uint8_t hash[32], msg[100];
+    const char *pers = "simple_ecdsa";
+
+    size_t rlen, slen, qlen, dlen;
+    memset(msg, 0x12, sizeof(msg));
+
+    //mbedtls_platform_set_printf(printf);
+
+    mbedtls_mpi r, s;
+    mbedtls_ecdsa_context ctx;
+    mbedtls_md_context_t md_ctx;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    mbedtls_mpi_init(&r);
+    mbedtls_mpi_init(&s);
+    mbedtls_ecdsa_init(&ctx);  // Initialize the ECDSA structure
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    /*
+    mbedtls_entropy_add_source(&entropy, entropy_source, NULL,
+                   MBEDTLS_ENTROPY_MAX_GATHER, MBEDTLS_ENTROPY_SOURCE_STRONG);*/
+    ret = mbedtls_ctr_drbg_seed(&ctr_drbg,
+                                sw_entropy, &entropy,
+                                (const uint8_t *)pers,
+                                strlen(pers));
+
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("\n  . setup rng ... ok\n\n");
+
+    mbedtls_md_init(&md_ctx);
+    mbedtls_md(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), msg, sizeof(msg), hash);
+    mbedtls_printf("  1. hash msg ... ok\n"); //calculate the hash value of msg
+
+    //generate ECDSA key pair
+    ret = mbedtls_ecdsa_genkey(&ctx,
+                               MBEDTLS_ECP_DP_SECP256R1, //select SECP256R1
+                               mbedtls_ctr_drbg_random,
+                               &ctr_drbg);
+
+    assert_exit(ret == 0, ret);
+    mbedtls_ecp_point_write_binary(&ctx.grp,
+                                   &ctx.Q,
+                                   MBEDTLS_ECP_PF_UNCOMPRESSED,
+                                   &qlen,
+                                   (unsigned char *)buf,
+                                   sizeof(buf));
+
+    dlen = mbedtls_mpi_size(&ctx.d);
+    mbedtls_mpi_write_binary(&ctx.d, (unsigned char *)(buf + qlen), dlen);
+    mbedtls_printf("  2. ecdsa generate keypair:\n");
+    _DUMP_((int)(qlen + dlen), (char *)buf);
+
+    //ECDSA signature, get r, s
+    ret = mbedtls_ecdsa_sign(&ctx.grp,
+                             &r,
+                             &s,
+                             &ctx.d,
+                             hash,
+                             sizeof(hash),
+                             mbedtls_ctr_drbg_random,
+                             &ctr_drbg);
+
+    assert_exit(ret == 0, ret);
+    rlen = mbedtls_mpi_size(&r);
+    slen = mbedtls_mpi_size(&s);
+    mbedtls_mpi_write_binary(&r, (unsigned char *)buf, rlen);
+    mbedtls_mpi_write_binary(&s, (unsigned char *)(buf + rlen), slen);
+
+    mbedtls_printf("  3. ecdsa generate signature:\n");
+    _DUMP_((int)(rlen + slen), (char *)buf);
+
+    //ECDSA verify
+    ret = mbedtls_ecdsa_verify(&ctx.grp, hash, sizeof(hash), &ctx.Q, &r, &s);
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("  4. ecdsa verify signature ... ok\n\n");
+
+    if(ret == 0)
+    {
+        printf("\033[32m ECDSSA Sig Verify Pass!\033[0m\n");
+
+    }
+    else
+    {
+        printf("\033[31m ECDSSA Sig Verify Fail!\033[0m\n");
+    }
+cleanup:
+    mbedtls_mpi_free(&r);
+    mbedtls_mpi_free(&s);
+    mbedtls_md_free(&md_ctx);
+    mbedtls_ecdsa_free(&ctx);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_entropy_free(&entropy);
+    return(ret != 0);
+}
+
+int sec_ecdsa_p384_test(void)
+{
+    int ret = 0;
+    char buf[97];
+    uint8_t hash[32], msg[100];
+    const char *pers = "simple_ecdsa";
+
+    size_t rlen, slen, qlen, dlen;
+    memset(msg, 0x12, sizeof(msg));
+
+    //mbedtls_platform_set_printf(printf);
+
+    mbedtls_mpi r, s;
+    mbedtls_ecdsa_context ctx;
+    mbedtls_md_context_t md_ctx;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    mbedtls_mpi_init(&r);
+    mbedtls_mpi_init(&s);
+    mbedtls_ecdsa_init(&ctx);  // Initialize the ECDSA structure
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    /*
+    mbedtls_entropy_add_source(&entropy, entropy_source, NULL,
+                   MBEDTLS_ENTROPY_MAX_GATHER, MBEDTLS_ENTROPY_SOURCE_STRONG);*/
+    ret = mbedtls_ctr_drbg_seed(&ctr_drbg,
+                                sw_entropy, &entropy,
+                                (const uint8_t *)pers,
+                                strlen(pers));
+
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("\n  . setup rng ... ok\n\n");
+
+    mbedtls_md_init(&md_ctx);
+    mbedtls_md(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), msg, sizeof(msg), hash);
+    mbedtls_printf("  1. hash msg ... ok\n"); //calculate the hash value of msg
+
+    //generate ECDSA key pair
+    ret = mbedtls_ecdsa_genkey(&ctx,
+                               MBEDTLS_ECP_DP_SECP384R1, //select SECP256R1
+                               mbedtls_ctr_drbg_random,
+                               &ctr_drbg);
+
+    assert_exit(ret == 0, ret);
+    mbedtls_ecp_point_write_binary(&ctx.grp,
+                                   &ctx.Q,
+                                   MBEDTLS_ECP_PF_UNCOMPRESSED,
+                                   &qlen,
+                                   (unsigned char *)buf,
+                                   sizeof(buf));
+
+    dlen = mbedtls_mpi_size(&ctx.d);
+    mbedtls_mpi_write_binary(&ctx.d, (unsigned char *)(buf + qlen), dlen);
+    mbedtls_printf("  2. ecdsa generate keypair:\n");
+    _DUMP_((int)(qlen + dlen), (char *)buf);
+
+    //ECDSA signature, get r, s
+    ret = mbedtls_ecdsa_sign(&ctx.grp,
+                             &r,
+                             &s,
+                             &ctx.d,
+                             hash,
+                             sizeof(hash),
+                             mbedtls_ctr_drbg_random,
+                             &ctr_drbg);
+
+    assert_exit(ret == 0, ret);
+    rlen = mbedtls_mpi_size(&r);
+    slen = mbedtls_mpi_size(&s);
+    mbedtls_mpi_write_binary(&r, (unsigned char *)buf, rlen);
+    mbedtls_mpi_write_binary(&s, (unsigned char *)(buf + rlen), slen);
+
+    mbedtls_printf("  3. ecdsa generate signature:\n");
+    _DUMP_((int)(rlen + slen), (char *)buf);
+
+    //ECDSA verify
+    ret = mbedtls_ecdsa_verify(&ctx.grp, hash, sizeof(hash), &ctx.Q, &r, &s);
+    assert_exit(ret == 0, ret);
+    mbedtls_printf("  4. ecdsa verify signature ... ok\n\n");
+
+    if(ret == 0)
+    {
+        printf("\033[32m ECDSSA Sig Verify Pass!\033[0m\n");
+
+    }
+    else
+    {
+        printf("\033[31m ECDSSA Sig Verify Fail!\033[0m\n");
+    }
+cleanup:
+    mbedtls_mpi_free(&r);
+    mbedtls_mpi_free(&s);
+    mbedtls_md_free(&md_ctx);
+    mbedtls_ecdsa_free(&ctx);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_entropy_free(&entropy);
+    return(ret != 0);
 }
