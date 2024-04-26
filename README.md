@@ -1,4 +1,5 @@
 # RISC-V crypto demo sim tool
+[繁體中文](README_TW.md) | English
 
 ## RISC-V Tool Preparation and Crypto Test Instructions
 
@@ -8,7 +9,7 @@ This README provides instructions on how to prepare the RISC-V tools (`spike` an
 
 To prepare the `spike` simulator and `pk` (proxy kernel), follow these steps:
 
-1. Navigate to the `riscv_tool` directory in the `open_source` folder:
+Navigate to the `riscv_tool` directory in the `open_source` folder:
 
 ```bash
 cd open_source/riscv_tool/
