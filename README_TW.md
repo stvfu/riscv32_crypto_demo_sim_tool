@@ -27,3 +27,21 @@ cd build_tree
 ./build_and_test.sh
 ```
 
+## 支援的演算法
+| 類型 | 演算法 | 實現 |
+|-------|-------|-------|
+| Random | gen random data | libtom |
+| HASH | SHA1 | libtom |
+| HASH | SHA256 | libtom |
+| HASH | SHA256 | libtom |
+| HASH | SHA384 | libtom |
+| HASH | SHA512 | libtom |
+| AES | ECB encrypt/decrytp | mbedtls |
+| AES | CBC encrypt/decrytp | mbedtls |
+| AES | CTR encrypt/decrytp | libtom |
+| AES | CMAC | mbedtls |
+| RSA | genkey/sign/verify | mbedtls |
+| ECC | gen secp256r1 keypair | mbedtls |
+| ECC | gen secp384r1 keypair | mbedtls |
+| ECC | gen secp521r1 keypair | mbedtls |
+| ECC | gen brainpool256r1 keypair | mbedtls |
