@@ -96,19 +96,110 @@ customization_error_t customization_ecc_bp256_generate_key(char* private_d, char
 customization_error_t customization_ecc_bp384_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
 customization_error_t customization_ecc_bp512_generate_key(char* private_d, char* public_Q_X, char* public_Q_Y);
 
-customization_error_t customization_ecdsa_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_p256_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_p384_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_p521_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_bp256_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_bp385_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_bp512_sign(char* private_d, char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_sign(char* private_d, int size_d_in_bytes,
+                           char* public_Q_X, int size_Q_X_in_bytes,
+                           char* public_Q_Y, int size_Q_Y_in_bytes,
+                           char* add_message, int size_m_in_bytes,
+                           char* r_in_MSW, int size_r_in_bytes,
+                           char* s_in_MSW, int size_s_in_bytes,
+                           int hash_type);
 
-customization_error_t customization_ecdsa_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_p256_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_p384_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_p521_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_bp256_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_bp385_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
-customization_error_t customization_ecdsa_bp512_verify(char* public_Q_X, char* public_Q_Y, char* add_message, int size_m_in_bytes, char* r_in_MSW, char* s_in_MSW, int hash_type);
+customization_error_t customization_ecdsa_verify(char* public_Q_X, int size_Q_X_in_bytes,
+                                char* public_Q_Y, int size_Q_Y_in_bytes,
+                                char* add_message, int size_m_in_bytes,
+                                char* r_in_MSW, int size_r_in_bytes,
+                                char* s_in_MSW, int size_s_in_bytes,
+                                int hash_type);
+
+customization_error_t customization_ecdsa_p256_sign(char* private_d, int size_d_in_bytes,
+                           char* public_Q_X, int size_Q_X_in_bytes,
+                           char* public_Q_Y, int size_Q_Y_in_bytes,
+                           char* add_message, int size_m_in_bytes,
+                           char* r_in_MSW, int size_r_in_bytes,
+                           char* s_in_MSW, int size_s_in_bytes,
+                           int hash_type);
+
+customization_error_t customization_ecdsa_p256_verify(char* public_Q_X, int size_Q_X_in_bytes,
+                                char* public_Q_Y, int size_Q_Y_in_bytes,
+                                char* add_message, int size_m_in_bytes,
+                                char* r_in_MSW, int size_r_in_bytes,
+                                char* s_in_MSW, int size_s_in_bytes,
+                                int hash_type);
+
+customization_error_t customization_ecdsa_p384_sign(char* private_d, int size_d_in_bytes,
+                           char* public_Q_X, int size_Q_X_in_bytes,
+                           char* public_Q_Y, int size_Q_Y_in_bytes,
+                           char* add_message, int size_m_in_bytes,
+                           char* r_in_MSW, int size_r_in_bytes,
+                           char* s_in_MSW, int size_s_in_bytes,
+                           int hash_type);
+
+customization_error_t customization_ecdsa_p384_verify(char* public_Q_X, int size_Q_X_in_bytes,
+                                char* public_Q_Y, int size_Q_Y_in_bytes,
+                                char* add_message, int size_m_in_bytes,
+                                char* r_in_MSW, int size_r_in_bytes,
+                                char* s_in_MSW, int size_s_in_bytes,
+                                int hash_type);
+
+customization_error_t customization_ecdsa_p521_sign(char* private_d, int size_d_in_bytes,
+                           char* public_Q_X, int size_Q_X_in_bytes,
+                           char* public_Q_Y, int size_Q_Y_in_bytes,
+                           char* add_message, int size_m_in_bytes,
+                           char* r_in_MSW, int size_r_in_bytes,
+                           char* s_in_MSW, int size_s_in_bytes,
+                           int hash_type);
+
+customization_error_t customization_ecdsa_p521_verify(char* public_Q_X, int size_Q_X_in_bytes,
+                                char* public_Q_Y, int size_Q_Y_in_bytes,
+                                char* add_message, int size_m_in_bytes,
+                                char* r_in_MSW, int size_r_in_bytes,
+                                char* s_in_MSW, int size_s_in_bytes,
+                                int hash_type);
+
+customization_error_t customization_ecdsa_bp256_sign(char* private_d, int size_d_in_bytes,
+                           char* public_Q_X, int size_Q_X_in_bytes,
+                           char* public_Q_Y, int size_Q_Y_in_bytes,
+                           char* add_message, int size_m_in_bytes,
+                           char* r_in_MSW, int size_r_in_bytes,
+                           char* s_in_MSW, int size_s_in_bytes,
+                           int hash_type);
+
+customization_error_t customization_ecdsa_bp256_verify(char* public_Q_X, int size_Q_X_in_bytes,
+                                char* public_Q_Y, int size_Q_Y_in_bytes,
+                                char* add_message, int size_m_in_bytes,
+                                char* r_in_MSW, int size_r_in_bytes,
+                                char* s_in_MSW, int size_s_in_bytes,
+                                int hash_type);
+
+customization_error_t customization_ecdsa_bp384_sign(char* private_d, int size_d_in_bytes,
+                           char* public_Q_X, int size_Q_X_in_bytes,
+                           char* public_Q_Y, int size_Q_Y_in_bytes,
+                           char* add_message, int size_m_in_bytes,
+                           char* r_in_MSW, int size_r_in_bytes,
+                           char* s_in_MSW, int size_s_in_bytes,
+                           int hash_type);
+
+customization_error_t customization_ecdsa_bp384_verify(char* public_Q_X, int size_Q_X_in_bytes,
+                                char* public_Q_Y, int size_Q_Y_in_bytes,
+                                char* add_message, int size_m_in_bytes,
+                                char* r_in_MSW, int size_r_in_bytes,
+                                char* s_in_MSW, int size_s_in_bytes,
+                                int hash_type);
+
+customization_error_t customization_ecdsa_bp512_sign(char* private_d, int size_d_in_bytes,
+                           char* public_Q_X, int size_Q_X_in_bytes,
+                           char* public_Q_Y, int size_Q_Y_in_bytes,
+                           char* add_message, int size_m_in_bytes,
+                           char* r_in_MSW, int size_r_in_bytes,
+                           char* s_in_MSW, int size_s_in_bytes,
+                           int hash_type);
+
+customization_error_t customization_ecdsa_bp512_verify(char* public_Q_X, int size_Q_X_in_bytes,
+                                char* public_Q_Y, int size_Q_Y_in_bytes,
+                                char* add_message, int size_m_in_bytes,
+                                char* r_in_MSW, int size_r_in_bytes,
+                                char* s_in_MSW, int size_s_in_bytes,
+                                int hash_type);
+
+
 
