@@ -96,3 +96,87 @@ int sec_hash_sha512(char * msg, char* sha_out, int msg_len)
     _SEC_TRACE_OUT
     return 0;
 }
+
+int sec_hash_sha512_224(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    hash_state md_sha512_224;
+    sha512_224_init(&md_sha512_224);
+    sha512_224_process(&md_sha512_224,
+                      (const unsigned char *)msg,
+                      (long unsigned int)msg_len); // size_of data
+    sha512_224_done(&md_sha512_224,
+                   (unsigned char *)sha_out);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_hash_sha512_256(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    hash_state md_sha512_256;
+    sha512_256_init(&md_sha512_256);
+    sha512_256_process(&md_sha512_256,
+                      (const unsigned char *)msg,
+                      (long unsigned int)msg_len); // size_of data
+    sha512_256_done(&md_sha512_256,
+                   (unsigned char *)sha_out);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_hash_sha3_sha224(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    hash_state md_sha224;
+    sha3_224_init(&md_sha224);
+    sha3_process(&md_sha224,
+                 (const unsigned char *)msg,
+                 (long unsigned int)msg_len); // size_of data
+    sha3_done(&md_sha224,
+             (unsigned char *)sha_out);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_hash_sha3_sha256(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    hash_state md_sha256;
+    sha3_256_init(&md_sha256);
+    sha3_process(&md_sha256,
+                 (const unsigned char *)msg,
+                 (long unsigned int)msg_len); // size_of data
+    sha3_done(&md_sha256,
+             (unsigned char *)sha_out);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_hash_sha3_sha384(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    hash_state md_sha384;
+    sha3_384_init(&md_sha384);
+    sha3_process(&md_sha384,
+                 (const unsigned char *)msg,
+                 (long unsigned int)msg_len); // size_of data
+    sha3_done(&md_sha384,
+             (unsigned char *)sha_out);
+    _SEC_TRACE_OUT
+    return 0;
+}
+
+int sec_hash_sha3_sha512(char * msg, char* sha_out, int msg_len)
+{
+    _SEC_TRACE_IN
+    hash_state md_sha512;
+    sha3_512_init(&md_sha512);
+    sha3_process(&md_sha512,
+                 (const unsigned char *)msg,
+                 (long unsigned int)msg_len); // size_of data
+    sha3_done(&md_sha512,
+             (unsigned char *)sha_out);
+    _SEC_TRACE_OUT
+    return 0;
+}

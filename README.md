@@ -30,10 +30,9 @@ cd build_tree
 |-------|-------|-------|
 | Random | gen random data | libtom |
 | HASH | SHA1 | libtom |
-| HASH | SHA256 | libtom |
-| HASH | SHA256 | libtom |
-| HASH | SHA384 | libtom |
-| HASH | SHA512 | libtom |
+| HASH | SHA224/SHA256/SHA384/SHA512] | libtom |
+| HASH | SHA512/SHA512-224/SHA512-256 | libtom |
+| HASH | SHA3: 224/256/384/512 | libtom |
 | AES | ECB encrypt/decrytp | mbedtls |
 | AES | CBC encrypt/decrytp | mbedtls |
 | AES | CTR encrypt/decrytp | libtom |

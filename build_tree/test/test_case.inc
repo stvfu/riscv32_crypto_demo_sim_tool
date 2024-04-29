@@ -12,6 +12,13 @@ static void test_sha256(void);
 static void test_sha224(void);
 static void test_sha384(void);
 static void test_sha512(void);
+static void test_sha512_224(void);
+static void test_sha512_256(void);
+static void test_sha3_sha256(void);
+static void test_sha3_sha224(void);
+static void test_sha3_sha384(void);
+static void test_sha3_sha512(void);
+
 static void test_aes_ecb_encrypt(void);
 static void test_aes_ecb_decrypt(void);
 static void test_aes_cbc_encrypt(void);
@@ -69,6 +76,12 @@ static MENU MENU_TABLE[] = {
     { "test sha256",                         &test_sha256},
     { "test sha384",                         &test_sha384},
     { "test sha512",                         &test_sha512},
+    { "test sha512_224",                     &test_sha512_224},
+    { "test sha512_256",                     &test_sha512_256},
+    { "test sha3 sha224",                    &test_sha3_sha224},
+    { "test sha3 sha256",                    &test_sha3_sha256},
+    { "test sha3 sha384",                    &test_sha3_sha384},
+    { "test sha3 sha512",                    &test_sha3_sha512},
 
     // aes
     { "test aes ecb encrypt",                &test_aes_ecb_encrypt},

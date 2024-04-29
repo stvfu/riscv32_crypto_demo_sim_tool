@@ -24,6 +24,12 @@ int sec_hash_sha224(char * msg, char* sha_out, int msg_len);
 int sec_hash_sha256(char * msg, char* sha_out, int msg_len);
 int sec_hash_sha384(char * msg, char* sha_out, int msg_len);
 int sec_hash_sha512(char * msg, char* sha_out, int msg_len);
+int sec_hash_sha512_224(char * msg, char* sha_out, int msg_len);
+int sec_hash_sha512_256(char * msg, char* sha_out, int msg_len);
+int sec_hash_sha3_sha224(char * msg, char* sha_out, int msg_len);
+int sec_hash_sha3_sha256(char * msg, char* sha_out, int msg_len);
+int sec_hash_sha3_sha384(char * msg, char* sha_out, int msg_len);
+int sec_hash_sha3_sha512(char * msg, char* sha_out, int msg_len);
 
 // AES
 int sec_aes_ecb_enc(int key_size_in_bytes, char *add_key, char *add_src, char *add_dest, int tr_size_in_bytes);
