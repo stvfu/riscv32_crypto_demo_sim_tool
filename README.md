@@ -30,15 +30,14 @@ cd build_tree
 |-------|-------|-------|
 | Random | gen random data | libtom |
 | HASH | SHA1 | libtom |
-| HASH | SHA224/SHA256/SHA384/SHA512] | libtom |
+| HASH | SHA224/SHA256/SHA384/SHA512 | libtom |
 | HASH | SHA512/SHA512-224/SHA512-256 | libtom |
 | HASH | SHA3: 224/256/384/512 | libtom |
-| AES | ECB encrypt/decrytp | mbedtls |
-| AES | CBC encrypt/decrytp | mbedtls |
-| AES | CTR encrypt/decrytp | libtom |
+| AES | ECB encrypt/decrypt | mbedtls |
+| AES | CBC encrypt/decrypt | mbedtls |
+| AES | CTR encrypt/decrypt | libtom |
 | AES | CMAC | mbedtls |
 | RSA | genkey/sign/verify | mbedtls |
-| ECC | gen secp256r1 keypair | mbedtls |
-| ECC | gen secp384r1 keypair | mbedtls |
-| ECC | gen secp521r1 keypair | mbedtls |
-| ECC | gen brainpool256r1 keypair | mbedtls |
+| ECC | genkey keypair | mbedtls |
+| ECDSA | secp256r1/secp384r1/secp521r1 | mbedtls |
+| ECDSA | brainpool256r1/brainpool384r1/brainpool512r1 | mbedtls |
