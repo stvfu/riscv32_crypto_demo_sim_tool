@@ -10,6 +10,14 @@ typedef struct MENU{
     void (*func_ptr)(void);
 }MENU;
 
+typedef enum {
+    E_MENU_MAIN,
+    E_MENU_HASH,
+    E_MENU_AES,
+    E_MENU_RSA,
+    E_MENU_ECC,
+} E_Menu_Index;
+
 #define _TEST_SUITE_TRACE_IN  printf("[%s][%d] Test case start\n", __func__,__LINE__);
 #define _TEST_SUITE_TRACE_OUT printf("[%s][%d] Test case end\n", __func__,__LINE__);
 
@@ -62,6 +70,26 @@ static void test_mebtls(void)
     mbedtls_test();
 }
 
+E_Menu_Index eMenuIndex = E_MENU_MAIN;
+static void switch_to_hash_menu(void)
+{
+    eMenuIndex = E_MENU_HASH;
+}
+
+static void switch_to_aes_menu(void)
+{
+    eMenuIndex = E_MENU_AES;
+}
+
+static void switch_to_rsa_menu(void)
+{
+    eMenuIndex = E_MENU_RSA;
+}
+
+static void switch_to_ecc_menu(void)
+{
+    eMenuIndex = E_MENU_ECC;
+}
 ////////////////////////////////////////////////////////////////////////
 // random related api
 ////////////////////////////////////////////////////////////////////////
@@ -94,22 +122,29 @@ static void test_random(void)
 ////////////////////////////////////////////////////////////////////////
 // Test case Menu related API
 ////////////////////////////////////////////////////////////////////////
-void __test_suite_message__(void)
+void __test_suite_message__(MENU* pMenu, int u32MenuNum)
 {
     printf("\n\n");
     printf("-----------------------------------------------\n");
     printf(" RISC-V crypto test suit\n");
     printf("-----------------------------------------------\n");
     int s32Index;
-    int s32MenuNum = sizeof(MENU_TABLE)/sizeof(MENU);
-    for(s32Index=0;s32Index<s32MenuNum;s32Index++)
+    for(s32Index=0;s32Index<u32MenuNum;s32Index++)
     {
-    printf("%2d.  %s\n", s32Index, MENU_TABLE[s32Index].NAME);
+        printf("%2d.  %s\n", s32Index, pMenu[s32Index].NAME);
     }
     printf(" q.  exit\n");
     printf("-----------------------------------------------\n");
     printf("Please input the selection : \n");
 
+}
+
+void __execute_test_case_in_meun__(MENU* pMenu, int u32Index)
+{
+    printf("%s\n", pMenu[u32Index].NAME);
+    printf("\n\n");
+    pMenu[u32Index].func_ptr();
+    printf("\n\nPress any key to continue.");
 }
 
 void __test_suite__(void)
@@ -120,14 +155,43 @@ void __test_suite__(void)
     int s32Index = 0;
     int s32CharNumber = 0;
     int s32ClearTextIndex = 0;
-    int s32MenuNum = sizeof(MENU_TABLE)/sizeof(MENU);
+    int s32MenuNum = 0;
+    MENU* pMeun = NULL;
 
     while(1)
     {
         s32Index = 0;
         s32CharNumber = 0;
-        __test_suite_message__();
 
+        switch(eMenuIndex)
+        {
+            case E_MENU_MAIN:
+                pMeun = MENU_TABLE;
+                s32MenuNum = sizeof(MENU_TABLE)/sizeof(MENU);
+                break;
+            case E_MENU_HASH:
+                pMeun = MENU_TABLE_HASH;
+                s32MenuNum = sizeof(MENU_TABLE_HASH)/sizeof(MENU);
+                break;
+            case E_MENU_AES:
+                pMeun = MENU_TABLE_AES;
+                s32MenuNum = sizeof(MENU_TABLE_AES)/sizeof(MENU);
+                break;
+            case E_MENU_RSA:
+                pMeun = MENU_TABLE_RSA;
+                s32MenuNum = sizeof(MENU_TABLE_RSA)/sizeof(MENU);
+                break;
+            case E_MENU_ECC:
+                pMeun = MENU_TABLE_ECC;
+                s32MenuNum = sizeof(MENU_TABLE_ECC)/sizeof(MENU);
+                break;
+            default:
+                pMeun = MENU_TABLE;
+                s32MenuNum = sizeof(MENU_TABLE)/sizeof(MENU);
+                break;
+        }
+
+        __test_suite_message__(pMeun, s32MenuNum);
         // char input
         while(1)
         {
@@ -198,11 +262,7 @@ void __test_suite__(void)
             continue;
         }
 
-        printf("%s\n", MENU_TABLE[s32Index].NAME);
-        printf("\n\n");
-        MENU_TABLE[s32Index].func_ptr();
-        printf("\n\nPress any key to continue.");
-        //getchar();
+        __execute_test_case_in_meun__(pMeun, s32Index);
     }
 }
 
