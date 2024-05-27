@@ -10,6 +10,12 @@ customization_error_t customization_hash_sha224(uint32_t * msg, uint32_t* sha_ou
 customization_error_t customization_hash_sha256(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
 customization_error_t customization_hash_sha384(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
 customization_error_t customization_hash_sha512(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
+customization_error_t customization_hash_sha512_224(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
+customization_error_t customization_hash_sha512_256(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
+customization_error_t customization_hash_sha3_sha224(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
+customization_error_t customization_hash_sha3_sha256(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
+customization_error_t customization_hash_sha3_sha384(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
+customization_error_t customization_hash_sha3_sha512(uint32_t * msg, uint32_t* sha_out, uint32_t msg_len);
 
 // AES
 customization_error_t customization_bc_aes_ecb_enc(uint8_t key_size_in_bytes,

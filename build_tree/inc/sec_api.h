@@ -15,10 +15,26 @@ typedef enum {
     E_ECC_LAST,
 } E_Sec_Ecc_Curves;
 
+typedef enum {
+    E_HASH_SHA1,
+    E_HASH_SHA224,
+    E_HASH_SHA256,
+    E_HASH_SHA384,
+    E_HASH_SHA512,
+    E_HASH_SHA512_224,
+    E_HASH_SHA512_256,
+    E_HASH_SHA3_224,
+    E_HASH_SHA3_SHA256,
+    E_HASH_SHA3_SHA384,
+    E_HASH_SHA3_SHA512,
+    E_HASH_LAST,
+} E_Sec_Hash_algo;
+
 // random
 int sec_generate_random_buffer(char *out_buf, int size);
 
 // sha
+int sec_hash(char * msg, char* sha_out, int msg_len, E_Sec_Hash_algo eHashAlgo);
 int sec_hash_sha1(char * msg, char* sha_out, int msg_len);
 int sec_hash_sha224(char * msg, char* sha_out, int msg_len);
 int sec_hash_sha256(char * msg, char* sha_out, int msg_len);
